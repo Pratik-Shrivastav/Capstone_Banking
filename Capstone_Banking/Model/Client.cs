@@ -15,7 +15,10 @@ public class Client
         public string AccountNumber { get; set; }
         public string IFSC { get; set; }
         public string Branch { get; set; }
-        public ICollection<Employee> EmployeeList { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public bool IsActive { get; set; }
+
+    public ICollection<Employee> EmployeeList { get; set; }
         public ICollection<Documents> DocumentList { get; set; }
 }
 
