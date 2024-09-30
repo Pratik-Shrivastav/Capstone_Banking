@@ -1,10 +1,8 @@
 ﻿using System;
+using Capstone_Banking.Model;
 
 public class Client
 {
-    public Client()
-    {
-
         public int Id { get; set; }
         public string FounderName { get; set; }
         public string CompanyName { get; set; }
@@ -20,4 +18,4 @@ public class Client
         public ICollection<Employee> EmployeeList { get; set; }
         public ICollection<Documents> DocumentList { get; set; }
 }
-}
+

@@ -361,3 +361,45 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# ASP.NET Core
+appsettings.json
+appsettings.*.json
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+
+# Entity Framework Migrations
+Migrations/
+
+# IIS Express
+/.vs/
+
+# ASP.NET Core Packages
+*.nupkg
+*.snupkg
+
+# Packages (NuGet, npm)
+node_modules/
+wwwroot/lib/
+
+# Bundles
+.bundle/
+minified/
+.bower/
+jspm_packages/
+
+# Publish output
+bin/Debug/
+bin/Release/
+bin/Publish/
+
+# Visual Studio Code directory
+.vscode/
+
+# User Secrets (Local secrets managed by ASP.NET Core)
+secrets.json
+
+# Logs
+*.log
+
