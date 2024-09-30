@@ -20,5 +20,7 @@ public class Client
 
     public ICollection<Employee> EmployeeList { get; set; }
         public ICollection<Documents> DocumentList { get; set; }
+
+        public ICollection<Payment> Payments { get; set; }
 }
 
