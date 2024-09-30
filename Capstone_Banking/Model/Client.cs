@@ -17,5 +17,7 @@ public class Client
         public string Branch { get; set; }
         public ICollection<Employee> EmployeeList { get; set; }
         public ICollection<Documents> DocumentList { get; set; }
+
+        public ICollection<Payment> Payments { get; set; }
 }
 
