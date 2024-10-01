@@ -13,9 +13,9 @@ namespace Capstone_Banking.Service
         }
 
         // Employee methods
-        public Task<Employee> AddEmployeeAsync(Employee employee)
+        public Task<Employee> AddEmployeeAsync(Employee employee, int userId)
         {
-            return _clientRepository.AddEmployeeAsync(employee);
+            return _clientRepository.AddEmployeeAsync(employee,userId);
         }
 
         public Task<IEnumerable<Employee>> GetEmployeesAsync()
@@ -39,9 +39,9 @@ namespace Capstone_Banking.Service
         }
 
         // Beneficiary methods
-        public Task<Beneficiary> AddBeneficiaryAsync(Beneficiary beneficiary)
+        public Task<Beneficiary> AddBeneficiaryAsync(Beneficiary beneficiary,int userId)
         {
-            return _clientRepository.AddBeneficiaryAsync(beneficiary);
+            return _clientRepository.AddBeneficiaryAsync(beneficiary,userId);
         }
 
         public Task<IEnumerable<Beneficiary>> GetBeneficiariesAsync()

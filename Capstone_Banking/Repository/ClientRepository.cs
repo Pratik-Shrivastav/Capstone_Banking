@@ -12,18 +12,27 @@ namespace Capstone_Banking.Repository
         {
             _bankingDbContext = bankingDbContext;
         }
-        public async Task<Employee> AddEmployeeAsync(Employee employee)
+        public async Task<Employee> AddEmployeeAsync(Employee employee, int userId)
         {
+            // Fetch the client to associate the employee with
+            
+
+            var user = await _bankingDbContext.UserTable.Include(c => c.ClientObject).ThenInclude(p=>p.EmployeeList)
+                .FirstOrDefaultAsync(c=>c.Id == userId);
             employee.CreatedAt = DateTime.UtcNow;
-            _bankingDbContext.EmployeeTable.Add(employee);
+            user.ClientObject.EmployeeList.Add(employee);
             await _bankingDbContext.SaveChangesAsync();
+
             return employee;
         }
 
+
         // Create Beneficiary
-        public async Task<Beneficiary> AddBeneficiaryAsync(Beneficiary beneficiary)
+        public async Task<Beneficiary> AddBeneficiaryAsync(Beneficiary beneficiary,int userId)
         {
-            _bankingDbContext.BeneficiaryTable.Add(beneficiary);
+            var user = await _bankingDbContext.UserTable.Include(c => c.ClientObject).ThenInclude(p => p.BeneficiaryList)
+                .FirstOrDefaultAsync(c => c.Id == userId);
+            user.ClientObject.BeneficiaryList.Add(beneficiary);
             await _bankingDbContext.SaveChangesAsync();
             return beneficiary;
         }

@@ -24,6 +24,8 @@ namespace Capstone_Banking.Controller
         [HttpPost("Employee")]
         public async Task<IActionResult> PostEmployee([FromBody] Employee employee)
         {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
             if (employee == null)
             {
                 return BadRequest("Employee is null");
@@ -32,7 +34,7 @@ namespace Capstone_Banking.Controller
             try
             {
                 employee.CreatedAt = DateTime.UtcNow; // Set createdAt date
-                await _clientService.AddEmployeeAsync(employee); // Add employee
+                await _clientService.AddEmployeeAsync(employee,int.Parse(userId)); // Add employee
                 return CreatedAtAction(nameof(GetEmployeeById), new { id = employee.EmployeeId }, employee);
             }
             catch (Exception ex)
@@ -47,12 +49,13 @@ namespace Capstone_Banking.Controller
         [HttpPost("Beneficiary")]
         public async Task<IActionResult> PostBeneficiary(Beneficiary beneficiary)
         {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
             if (beneficiary == null)
             {
                 return BadRequest("Beneficiary is null");
             }
 
-            var createdBeneficiary = await _clientService.AddBeneficiaryAsync(beneficiary);
+            var createdBeneficiary = await _clientService.AddBeneficiaryAsync(beneficiary,int.Parse(userId));
             return CreatedAtAction(nameof(GetBeneficiaryById), new { id = createdBeneficiary.Id }, createdBeneficiary);
         }
 
