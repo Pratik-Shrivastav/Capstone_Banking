@@ -21,5 +21,10 @@ namespace Capstone_Banking.Service
            return await _superAdminRepository.GetClientById(id);
         }
 
+        public Task<ICollection<Documents>> GetDocumentById(int clientId)
+        {
+            return _superAdminRepository.GetDocuments(clientId);
+        }
+
     }
 }

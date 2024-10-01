@@ -1,6 +1,7 @@
 ﻿    using Capstone_Banking.Data;
     using Capstone_Banking.Model;
-    using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
     namespace Capstone_Banking.CommonFunction
     {
@@ -88,6 +89,37 @@
             }
 
             return "File(s) Uploaded Successfully";
+        }
+
+        public async Task<FileResult> DownloadFile(string fileName)
+        {
+            // Specify the path where files are stored
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", fileName);
+
+            // Check if the file exists
+            if (!System.IO.File.Exists(path))
+            {
+                return null; // or handle it as needed (e.g., return a NotFound result)
+            }
+
+            // Read the file content
+            var fileContent = await System.IO.File.ReadAllBytesAsync(path);
+
+            // Get the file extension to determine the content type
+            string extension = Path.GetExtension(fileName);
+            string contentType = extension switch
+            {
+                ".jpg" => "image/jpeg",
+                ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                _ => "application/octet-stream" // default
+            };
+
+            return new FileContentResult(fileContent, contentType)
+            {
+                FileDownloadName = fileName // Set the file name for the download
+            };
         }
 
     }

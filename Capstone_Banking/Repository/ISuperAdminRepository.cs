@@ -6,6 +6,8 @@
 
         public Task<Client> GetClientById(int id);
 
+        public Task<ICollection<Documents>> GetDocuments(int clientId);
+
 
     }
 }

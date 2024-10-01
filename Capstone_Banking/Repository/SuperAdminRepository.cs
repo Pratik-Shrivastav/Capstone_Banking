@@ -30,6 +30,13 @@ namespace Capstone_Banking.Repository
                 .ThenInclude(p => p.TransactionList).FirstOrDefaultAsync(z => z.Id == id);
         }
 
+        public async Task<ICollection<Documents>> GetDocuments(int clientId)
+        {
+            Client client= await _db.ClientTable.Include(c => c.DocumentList).FirstOrDefaultAsync(x=>x.Id==clientId);
+            return client.DocumentList;
+        }
+
+
 
 
     }

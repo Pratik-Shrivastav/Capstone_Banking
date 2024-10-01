@@ -1,4 +1,5 @@
-﻿using Capstone_Banking.Data;
+﻿using Capstone_Banking.CommonFunction;
+using Capstone_Banking.Data;
 using Capstone_Banking.Model;
 using Capstone_Banking.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -36,11 +37,37 @@ namespace Capstone_Banking.Controller
            return user;
         }
 
-        [HttpGet("{id}")]
-        public async Task<Client> GetById(int id)
+        [HttpGet("{clientId}")]
+        public async Task<Client> GetById(int clientId)
         {
             
-            return await _superAdminService.GetClientsById(id);
+            return await _superAdminService.GetClientsById(clientId);
+        }
+
+        [HttpGet("Document/{id}")]
+        public async Task<ICollection<Documents>> GetDocumentsNameOfClient(int id)
+        {
+
+            return await _superAdminService.GetDocumentById(id);
+        }
+
+        [HttpGet("Download/{fileName}")]
+        public async Task<IActionResult> DownloadFile(string fileName)
+        {
+            BankingDbContext bankingDbContext = new BankingDbContext();
+            var fileResult = await (new UploadHandler(bankingDbContext)).DownloadFile(fileName);
+            if (fileResult == null)
+            {
+                return NotFound("File not found");
+            }
+            return fileResult; 
+        }
+
+        [HttpPost("ClientStatus/{clientId}")]
+        public void PostClientStatus([FromBody] string value)
+        {
+            
+          
         }
     }
 }
