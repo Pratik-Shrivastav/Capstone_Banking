@@ -14,6 +14,7 @@ namespace Capstone_Banking.Repository
         }
         public async Task<Employee> AddEmployeeAsync(Employee employee)
         {
+            employee.CreatedAt = DateTime.UtcNow;
             _bankingDbContext.EmployeeTable.Add(employee);
             await _bankingDbContext.SaveChangesAsync();
             return employee;

@@ -37,7 +37,7 @@ namespace Capstone_Banking.Service
             newClient.PostalCode = registerDto.PostalCode;
             newClient.Country = registerDto.Country;
             newClient.Phone = registerDto.Phone;
-            newClient.Status = "Pending";
+            newClient.Status = "Success";
             newClient.IsActive = true;
 
             newAccountDetails.AccountNumber = registerDto.AccountNumber;
