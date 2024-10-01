@@ -12,13 +12,14 @@ public class Client
         public string PostalCode { get; set; }
         public string Country { get; set; }
         public string Phone { get; set; }
-        public DateTime CreatedOn { get; set; }
+        public string Status { get; set; }
         public bool IsActive { get; set; }
         public AccountDetails AccountDetailsObject { get; set; }
 
-        public ICollection<Employee> EmployeeList { get; set; }
-        public ICollection<Documents> DocumentList { get; set; }
+        public ICollection<Employee>? EmployeeList { get; set; }
+        public ICollection<Documents>? DocumentList { get; set; }
 
         public ICollection<Payment>? Payments { get; set; }
+
 }
 

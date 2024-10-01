@@ -9,9 +9,9 @@
         public string Role {  get; set; }
         public string UserName { get; set; }
         public DateTime CreatedOn { get; set; }
-        public Bank? BankObject { get; set; }
+        public Bank? BankObject { get; set; } 
         public Client? ClientObject { get; set; }
-        public ICollection<AuditLog> AuditLogList { get; set; }
+        public ICollection<AuditLog>? AuditLogList { get; set; } = new List<AuditLog>();
 
 
     }
