@@ -40,17 +40,26 @@ namespace Capstone_Banking.Repository
             return await _bankingDbContext.BeneficiaryTable.Include(m => m.PaymentsList).Include(e=>e.AccountDetailsObject).ToListAsync();
         }
 
-        // Get Employee by ID
+        // Get Employee by ID with related entities
         public async Task<Employee> GetEmployeeByIdAsync(int id)
         {
-            return await _bankingDbContext.EmployeeTable.FindAsync(id);
+            return await _bankingDbContext.EmployeeTable
+                .Include(e => e.AccountDetailsObject)  // Include Account Details
+                      
+                .FirstOrDefaultAsync(e => e.EmployeeId == id); // Use FirstOrDefaultAsync for better handling of nulls
         }
 
-        // Get Beneficiary by ID
+
+        // Get Beneficiary by ID with related entities
         public async Task<Beneficiary> GetBeneficiaryByIdAsync(int id)
         {
-            return await _bankingDbContext.BeneficiaryTable.FindAsync(id);
+            return await _bankingDbContext.BeneficiaryTable
+                .Include(b => b.AccountDetailsObject)   // Include Account Details
+                .Include(b => b.PaymentsList)            // Include Payments if necessary
+                .ThenInclude(p => p.Transactions)         // Include Transactions related to Payments if needed
+                .FirstOrDefaultAsync(b => b.Id == id); // Use FirstOrDefaultAsync for better handling of nulls
         }
+
 
         // Update Employee
         public async Task<Employee> UpdateEmployeeAsync(Employee employee)
