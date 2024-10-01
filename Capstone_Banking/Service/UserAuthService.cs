@@ -63,13 +63,22 @@ namespace Capstone_Banking.Service
             else
             {
                 bool pass = BCrypt.Net.BCrypt.EnhancedVerify( loginData.Password, user.Password);
+        
                 if (pass)
                 {
                     loginResponse.Message = "Login Successful";
                     loginResponse.Success = true;
                     loginResponse.Token= GenerateToken.GetToken(user, _configuration);
-                    loginResponse.Status = user.ClientObject.Status;
+                    if (user.ClientObject == null)
+                    {
+                        loginResponse.Status = "Success";
+                    }
+                    else
+                    {
+                        loginResponse.Status = user.ClientObject.Status;
+                    }
                     loginResponse.Role = user.Role;
+                    loginResponse.Id = user.Id;
 
                 }
                 else
@@ -81,6 +90,11 @@ namespace Capstone_Banking.Service
                 return loginResponse;
             }
 
+        }
+
+        public async Task<User> GetUserById(int id)
+        {
+           return await _userAuthRepository.GetUserByIdDocumnet(id);
         }
     }
 }

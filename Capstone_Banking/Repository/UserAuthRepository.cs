@@ -24,5 +24,11 @@ namespace Capstone_Banking.Repository
             return user;
         }
 
+        public async Task<User> GetUserByIdDocumnet(int id)
+        {
+            User user = await _bankingDbContext.UserTable.Include(X => X.ClientObject).ThenInclude(o => o.DocumentList).FirstOrDefaultAsync(c => c.Id == id);
+            return user;
+        }
+
     }
 }

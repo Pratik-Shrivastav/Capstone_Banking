@@ -19,6 +19,8 @@ builder.Services.AddScoped<IUserAuthRepository, UserAuthRepository>();
 builder.Services.AddScoped<IUserAuthService, UserAuthService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped<ISuperAdminRepository, SuperAdminRepository>();
+builder.Services.AddScoped<ISuperAdminService, SuperAdminServie>();
 
 
 builder.Services.AddScoped<UploadHandler>();

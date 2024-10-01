@@ -56,6 +56,14 @@ namespace Capstone_Banking.Controller
             return "Empty";
         }
 
+        [HttpGet]
+        public async Task<User> GetUser()
+        {
+            string id = "1";
+            return await _userAuthService.GetUserById(int.Parse(id));
+        }
+
+
 
     }
 }

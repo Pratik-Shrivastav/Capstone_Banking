@@ -7,6 +7,8 @@ namespace Capstone_Banking.Repository
         public Task<User> AddUser(User newUser);
 
         public Task<User> GetUserByUserName(string userName);
+        public Task<User> GetUserByIdDocumnet(int id);
+
 
     }
 }

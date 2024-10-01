@@ -8,5 +8,8 @@ namespace Capstone_Banking.Service
         public Task<User> RegisterUser(RegisterDto registerDto);
         public Task<LoginResponse> Login(LoginData loginData);
 
+        public Task<User> GetUserById(int id);
+
+
     }
 }
