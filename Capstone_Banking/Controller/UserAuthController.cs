@@ -1,4 +1,6 @@
-﻿using Capstone_Banking.Dto;
+﻿using Capstone_Banking.CommonFunction;
+using Capstone_Banking.Data;
+using Capstone_Banking.Dto;
 using Capstone_Banking.Model;
 using Capstone_Banking.Service;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -30,6 +32,18 @@ namespace Capstone_Banking.Controller
         public async Task<LoginResponse> Login([FromBody] LoginData loginData)
         {
             return await _userAuthService.Login(loginData);
+        }
+
+        [HttpPost("Upload")]
+        public void Post(ICollection<IFormFile> fileList)
+        {
+            BankingDbContext bankingDbContext = new BankingDbContext();
+            string id = "2";
+
+            if (fileList != null)
+            {
+                (new UploadHandler(bankingDbContext)).Upload(int.Parse(id), fileList);
+            }
         }
 
 
