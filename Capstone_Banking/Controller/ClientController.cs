@@ -12,16 +12,6 @@ namespace Capstone_Banking.Controller
     {
 
         // POST api/<ClientController>
-        [HttpPost]
-        public void Post(ICollection<IFormFile> fileList)
-        {
-            BankingDbContext bankingDbContext = new BankingDbContext();
-            string id = "2";
-
-            if (fileList != null)
-            {
-                (new UploadHandler(bankingDbContext)).Upload(int.Parse(id),fileList);
-            }
-        }
+        
     }
 }

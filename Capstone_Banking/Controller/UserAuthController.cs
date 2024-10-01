@@ -3,8 +3,10 @@ using Capstone_Banking.Data;
 using Capstone_Banking.Dto;
 using Capstone_Banking.Model;
 using Capstone_Banking.Service;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,9 +17,11 @@ namespace Capstone_Banking.Controller
     public class UserAuthController : ControllerBase
     {
         private IUserAuthService _userAuthService;
-        public UserAuthController(IUserAuthService userAuthService)
+        private UploadHandler _uploadHandler;
+        public UserAuthController(IUserAuthService userAuthService, UploadHandler upload)
         {
             _userAuthService = userAuthService;
+            _uploadHandler = upload;
         }
         
 
@@ -35,15 +39,21 @@ namespace Capstone_Banking.Controller
         }
 
         [HttpPost("Upload")]
-        public void Post(ICollection<IFormFile> fileList)
+        public async Task<string> Post(IFormFile cin, IFormFile aoa, IFormFile pan)
         {
+            ICollection<IFormFile> fileList = new List<IFormFile>();
             BankingDbContext bankingDbContext = new BankingDbContext();
-            string id = "2";
+            string id = "1";
+            fileList.Add(aoa);
+            fileList.Add(pan);
+            fileList.Add(cin);
 
             if (fileList != null)
             {
-                (new UploadHandler(bankingDbContext)).Upload(int.Parse(id), fileList);
+                //_uploadHandler.Upload(int.Parse(id), fileList);
+                return await (new UploadHandler(bankingDbContext).Upload(int.Parse(id),fileList));
             }
+            return "Empty";
         }
 
 

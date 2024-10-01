@@ -1,4 +1,5 @@
 using System.Text;
+using Capstone_Banking.CommonFunction;
 using Capstone_Banking.Data;
 using Capstone_Banking.Repository;
 using Capstone_Banking.Service;
@@ -17,6 +18,8 @@ builder.Services.AddDbContext<BankingDbContext>();
 builder.Services.AddScoped<IUserAuthRepository, UserAuthRepository>();
 builder.Services.AddScoped<IUserAuthService, UserAuthService>();
 
+
+builder.Services.AddScoped<UploadHandler>();
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
