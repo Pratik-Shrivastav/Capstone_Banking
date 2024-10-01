@@ -19,19 +19,29 @@ namespace Capstone_Banking.Controller
             _clientService = clientService;
         }
 
-        
+
         // POST: api/Client/Employee
         [HttpPost("Employee")]
-        public async Task<IActionResult> PostEmployee(Employee employee)
+        public async Task<IActionResult> PostEmployee([FromBody] Employee employee)
         {
             if (employee == null)
             {
                 return BadRequest("Employee is null");
             }
 
-            var createdEmployee = await _clientService.AddEmployeeAsync(employee);
-            return CreatedAtAction(nameof(GetEmployeeById), new { id = createdEmployee.EmployeeId }, createdEmployee);
+            try
+            {
+                employee.CreatedAt = DateTime.UtcNow; // Set createdAt date
+                await _clientService.AddEmployeeAsync(employee); // Add employee
+                return CreatedAtAction(nameof(GetEmployeeById), new { id = employee.EmployeeId }, employee);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}"); // Log the error
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
+
 
         // POST: api/Client/Beneficiary
         [HttpPost("Beneficiary")]
