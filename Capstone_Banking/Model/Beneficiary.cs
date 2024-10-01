@@ -7,7 +7,9 @@
         public DateTime CreatedOn { get; set; }
         public bool IsActive    { get; set; }
         public AccountDetails AccountDetailsObject { get; set; }
-        public ICollection<Payment> PaymentsList { get; set; }
+        public ICollection<Payment>? PaymentsList { get; set; }
+
+        
 
 
     }
