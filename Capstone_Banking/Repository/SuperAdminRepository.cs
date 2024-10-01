@@ -14,16 +14,20 @@ namespace Capstone_Banking.Repository
 
         public async Task<ICollection<Client>> GetAllClients()
         {
-            return await _db.ClientTable.Include(c=>c.AccountDetailsObject)
-                .Include(d=>d.EmployeeList).ThenInclude(y=>y.AccountDetailsObject)
-                .Include(e=>e.Payments).ThenInclude(x=>x.Transactions).ToListAsync();
+            return await _db.ClientTable.Include(c => c.AccountDetailsObject)
+                .Include(d => d.EmployeeList).ThenInclude(y => y.AccountDetailsObject)
+                .Include(e => e.BeneficiaryList).ThenInclude(x => x.PaymentsList).ThenInclude(e => e.Transactions)
+                .Include(a => a.SalaryDisbursementList)
+                .ThenInclude(p => p.TransactionList).ToListAsync();
         }
 
         public async Task<Client> GetClientById(int id)
         {
             return await _db.ClientTable.Include(c => c.AccountDetailsObject)
                 .Include(d => d.EmployeeList).ThenInclude(y => y.AccountDetailsObject)
-                .Include(e => e.Payments).ThenInclude(x => x.Transactions).FirstOrDefaultAsync(z => z.Id == id);
+                .Include(e => e.BeneficiaryList).ThenInclude(x => x.PaymentsList).ThenInclude(e => e.Transactions)
+                .Include(a => a.SalaryDisbursementList)
+                .ThenInclude(p => p.TransactionList).FirstOrDefaultAsync(z => z.Id == id);
         }
 
 

@@ -17,6 +17,7 @@ namespace Capstone_Banking.Data
         public DbSet<SalaryDisbursement> SalaryDisbursementTable { get; set; }
         public DbSet<Transactions> MoneyTransactionsTable { get; set; }
         public DbSet<User> UserTable { get; set; }
+        public DbSet<SalaryFor> SalaryForTable { get; set; }
 
 
         public BankingDbContext()

@@ -31,6 +31,7 @@ namespace Capstone_Banking.Service
 
             newClient.FounderName = registerDto.FounderName;
             newClient.CompanyName = registerDto.CompanyName;
+            newClient.Email = registerDto.Email;
             newClient.Address = registerDto.Address;
             newClient.City = registerDto.City;
             newClient.Region = registerDto.Region;

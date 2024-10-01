@@ -6,6 +6,7 @@ public class Client
         public int Id { get; set; }
         public string FounderName { get; set; }
         public string CompanyName { get; set; }
+        public string Email {  get; set; }
         public string Address { get; set; }
         public string City { get; set; }
         public string Region { get; set; }
@@ -15,9 +16,10 @@ public class Client
         public string Status { get; set; }
         public bool IsActive { get; set; }
         public AccountDetails AccountDetailsObject { get; set; }
-        public ICollection<Employee>? EmployeeList { get; set; }
+        public ICollection<Employee>? EmployeeList { get; set; } = new List<Employee>();
         public ICollection<Documents>? DocumentList { get; set; } = new List<Documents>();
-        public ICollection<Payment>? Payments { get; set; }
+        public ICollection<Beneficiary>? BeneficiaryList { get; set; }  = new List<Beneficiary>();
+        public ICollection<SalaryDisbursement>? SalaryDisbursementList { get; set; }
 
 }
 

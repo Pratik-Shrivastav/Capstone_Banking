@@ -6,7 +6,7 @@
         public double Amount { get; set; }
         public string Status { get; set; }
         public DateTime ProcessedAt { get; set; }
-        public ICollection<Employee> Employees { get; set; }
+        public ICollection<SalaryFor> SalaryForList { get; set; }
         public ICollection<Transactions>? TransactionList { get; set; }
     }
 }
