@@ -43,7 +43,7 @@ namespace Capstone_Banking.Controller
         {
             ICollection<IFormFile> fileList = new List<IFormFile>();
             BankingDbContext bankingDbContext = new BankingDbContext();
-            string id = "1";
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
             fileList.Add(aoa);
             fileList.Add(pan);
             fileList.Add(cin);
@@ -51,7 +51,7 @@ namespace Capstone_Banking.Controller
             if (fileList != null)
             {
                 //_uploadHandler.Upload(int.Parse(id), fileList);
-                return await (new UploadHandler(bankingDbContext).Upload(int.Parse(id),fileList));
+                return await (new UploadHandler(bankingDbContext).Upload(int.Parse(userId),fileList));
             }
             return "Empty";
         }
@@ -59,8 +59,8 @@ namespace Capstone_Banking.Controller
         [HttpGet]
         public async Task<User> GetUser()
         {
-            string id = "1";
-            return await _userAuthService.GetUserById(int.Parse(id));
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            return await _userAuthService.GetUserById(int.Parse(userId));
         }
 
 

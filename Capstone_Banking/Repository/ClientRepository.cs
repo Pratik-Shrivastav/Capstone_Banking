@@ -38,22 +38,22 @@ namespace Capstone_Banking.Repository
             return beneficiary;
         }
 
-        // Get Employees for a specific client
+        // Get All Employees
         public async Task<IEnumerable<Employee>> GetEmployeesAsync(int userId)
         {
-            var user = await _bankingDbContext.UserTable.Include(c => c.ClientObject).ThenInclude(p => p.EmployeeList)
-                .FirstOrDefaultAsync(c => c.Id == userId);
-
-            return user.ClientObject.EmployeeList.Where(e => e.isActive).ToList(); // Only return active employees
+            User user = await _bankingDbContext.UserTable.Include(x => x.ClientObject)
+     .ThenInclude(y => y.EmployeeList)
+     .ThenInclude(z => z.AccountDetailsObject).FirstOrDefaultAsync(y => y.Id == userId);
+            return user.ClientObject.EmployeeList;
         }
 
-        // Get All Beneficiaries for a specific client
+        // Get All Beneficiaries
         public async Task<IEnumerable<Beneficiary>> GetBeneficiariesAsync(int userId)
         {
-            var user = await _bankingDbContext.UserTable.Include(c => c.ClientObject).ThenInclude(p => p.BeneficiaryList).ThenInclude(e=>e.AccountDetailsObject)
-                .FirstOrDefaultAsync(c => c.Id == userId);
-
-            return user.ClientObject.BeneficiaryList.Where(b => b.IsActive).ToList();
+            User user = await _bankingDbContext.UserTable.Include(x => x.ClientObject)
+    .ThenInclude(y => y.BeneficiaryList).ThenInclude(z => z.AccountDetailsObject)
+    .FirstOrDefaultAsync(y => y.Id == userId);
+            return user.ClientObject.BeneficiaryList;
         }
 
         // Get Employee by ID
