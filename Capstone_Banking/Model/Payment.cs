@@ -8,7 +8,7 @@ namespace Capstone_Banking.Model
 
         public string PaymentType { get; set; }
         public double Amount { get; set; }
-        public string Status { get; set; }  
+        public string Status { get; set; } 
         public DateTime CreatedAt { get; set; }
         public int ApprovedBy { get; set; }  
         public DateTime? ApprovedAt { get; set; }

@@ -68,6 +68,20 @@ namespace Capstone_Banking.Service
         {
             return _clientRepository.DisburseSalariesAsync(salaryDisbursement, userId, employeeIds);
         }
+        public async Task<Payment> CreatePaymentAsync(Payment payment, int beneficiaryId, int userId)
+        {
+            return await _clientRepository.CreatePaymentAsync(payment, beneficiaryId, userId);
+        }
+
+        public async Task<IEnumerable<Beneficiary>> GetActiveBeneficiariesAsync(int userId)
+        {
+            return await _clientRepository.GetActiveBeneficiariesAsync(userId);
+        }
+
+        public async Task<Payment> GetPaymentByIdAsync(int paymentId)
+        {
+            return await _clientRepository.GetPaymentByIdAsync(paymentId);
+        }
 
     }
 }
