@@ -1,7 +1,8 @@
 ﻿using Capstone_Banking.Data;
 using Capstone_Banking.Model;
 using Microsoft.EntityFrameworkCore;
-
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Capstone_Banking.Repository
 {
@@ -12,13 +13,13 @@ namespace Capstone_Banking.Repository
         {
             _bankingDbContext = bankingDbContext;
         }
+
+        // Add Employee for specific client
         public async Task<Employee> AddEmployeeAsync(Employee employee, int userId)
         {
-            // Fetch the client to associate the employee with
-            
+            var user = await _bankingDbContext.UserTable.Include(c => c.ClientObject).ThenInclude(p => p.EmployeeList)
+                .FirstOrDefaultAsync(c => c.Id == userId);
 
-            var user = await _bankingDbContext.UserTable.Include(c => c.ClientObject).ThenInclude(p=>p.EmployeeList)
-                .FirstOrDefaultAsync(c=>c.Id == userId);
             employee.CreatedAt = DateTime.UtcNow;
             user.ClientObject.EmployeeList.Add(employee);
             await _bankingDbContext.SaveChangesAsync();
@@ -26,40 +27,44 @@ namespace Capstone_Banking.Repository
             return employee;
         }
 
-
-        // Create Beneficiary
-        public async Task<Beneficiary> AddBeneficiaryAsync(Beneficiary beneficiary,int userId)
+        // Add Beneficiary for specific client
+        public async Task<Beneficiary> AddBeneficiaryAsync(Beneficiary beneficiary, int userId)
         {
             var user = await _bankingDbContext.UserTable.Include(c => c.ClientObject).ThenInclude(p => p.BeneficiaryList)
                 .FirstOrDefaultAsync(c => c.Id == userId);
+
             user.ClientObject.BeneficiaryList.Add(beneficiary);
             await _bankingDbContext.SaveChangesAsync();
             return beneficiary;
         }
 
-        // Get All Employees
-        public async Task<IEnumerable<Employee>> GetEmployeesAsync()
+        // Get Employees for a specific client
+        public async Task<IEnumerable<Employee>> GetEmployeesAsync(int userId)
         {
-            return await _bankingDbContext.EmployeeTable.Include(m=>m.AccountDetailsObject).ToListAsync();
+            var user = await _bankingDbContext.UserTable.Include(c => c.ClientObject).ThenInclude(p => p.EmployeeList)
+                .FirstOrDefaultAsync(c => c.Id == userId);
+
+            return user.ClientObject.EmployeeList.Where(e => e.isActive).ToList(); // Only return active employees
         }
 
-        // Get All Beneficiaries
-        public async Task<IEnumerable<Beneficiary>> GetBeneficiariesAsync()
+        // Get All Beneficiaries for a specific client
+        public async Task<IEnumerable<Beneficiary>> GetBeneficiariesAsync(int userId)
         {
-            return await _bankingDbContext.BeneficiaryTable.Include(m => m.PaymentsList).Include(e=>e.AccountDetailsObject).ToListAsync();
+            var user = await _bankingDbContext.UserTable.Include(c => c.ClientObject).ThenInclude(p => p.BeneficiaryList).ThenInclude(e=>e.AccountDetailsObject)
+                .FirstOrDefaultAsync(c => c.Id == userId);
+
+            return user.ClientObject.BeneficiaryList.Where(b => b.IsActive).ToList();
         }
 
-        // Get Employee by ID with related entities
+        // Get Employee by ID
         public async Task<Employee> GetEmployeeByIdAsync(int id)
         {
             return await _bankingDbContext.EmployeeTable
                 .Include(e => e.AccountDetailsObject)  // Include Account Details
-                      
                 .FirstOrDefaultAsync(e => e.EmployeeId == id); // Use FirstOrDefaultAsync for better handling of nulls
         }
 
-
-        // Get Beneficiary by ID with related entities
+        // Get Beneficiary by ID
         public async Task<Beneficiary> GetBeneficiaryByIdAsync(int id)
         {
             return await _bankingDbContext.BeneficiaryTable
@@ -68,7 +73,6 @@ namespace Capstone_Banking.Repository
                 .ThenInclude(p => p.Transactions)         // Include Transactions related to Payments if needed
                 .FirstOrDefaultAsync(b => b.Id == id); // Use FirstOrDefaultAsync for better handling of nulls
         }
-
 
         // Update Employee
         public async Task<Employee> UpdateEmployeeAsync(Employee employee)
@@ -92,7 +96,7 @@ namespace Capstone_Banking.Repository
             var employee = await _bankingDbContext.EmployeeTable.FindAsync(id);
             if (employee != null)
             {
-                employee.isActive = false;
+                employee.isActive = false;  // Soft delete by marking as inactive
                 _bankingDbContext.EmployeeTable.Update(employee);
                 await _bankingDbContext.SaveChangesAsync();
             }
@@ -104,11 +108,28 @@ namespace Capstone_Banking.Repository
             var beneficiary = await _bankingDbContext.BeneficiaryTable.FindAsync(id);
             if (beneficiary != null)
             {
-                beneficiary.IsActive = false;
+                beneficiary.IsActive = false;  // Soft delete by marking as inactive
                 _bankingDbContext.BeneficiaryTable.Update(beneficiary);
                 await _bankingDbContext.SaveChangesAsync();
             }
         }
 
+        // Salary Disbursement for a specific client
+        public async Task<SalaryDisbursement> DisburseSalariesAsync(SalaryDisbursement salaryDisbursement, int userId, List<int> employeeIds)
+        {
+            var user = await _bankingDbContext.UserTable.Include(c => c.ClientObject).ThenInclude(p => p.EmployeeList)
+                .FirstOrDefaultAsync(c => c.Id == userId);
+
+            var salaryForList = employeeIds
+                .Where(eId => user.ClientObject.EmployeeList.Any(e => e.EmployeeId == eId && e.isActive)) // Only include active employees of the client
+                .Select(eId => new SalaryFor { EmployeeId = eId })
+                .ToList();
+
+            salaryDisbursement.SalaryForList = salaryForList;
+            _bankingDbContext.SalaryDisbursementTable.Add(salaryDisbursement);
+            await _bankingDbContext.SaveChangesAsync();
+
+            return salaryDisbursement;
+        }
     }
 }

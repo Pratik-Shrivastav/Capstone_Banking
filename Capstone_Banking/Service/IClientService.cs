@@ -17,5 +17,7 @@ namespace Capstone_Banking.Service
         Task<Beneficiary> GetBeneficiaryByIdAsync(int id);
         Task<Beneficiary> UpdateBeneficiaryAsync(Beneficiary beneficiary);
         Task DeleteBeneficiaryAsync(int id);
+
+        Task<SalaryDisbursement> DisburseSalariesAsync(SalaryDisbursement salaryDisbursement, int userId, List<int> employeeIds);
     }
 }
