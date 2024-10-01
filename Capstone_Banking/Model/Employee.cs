@@ -8,6 +8,8 @@
         public double Salary { get; set; }
         public DateTime CreatedAt { get; set; }
         public AccountDetails AccountDetailsObject { get; set; }
+
+        public bool isActive { get; set; }
     }
 
 }
