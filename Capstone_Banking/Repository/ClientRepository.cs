@@ -38,15 +38,21 @@ namespace Capstone_Banking.Repository
         }
 
         // Get All Employees
-        public async Task<IEnumerable<Employee>> GetEmployeesAsync()
+        public async Task<IEnumerable<Employee>> GetEmployeesAsync(int userId)
         {
-            return await _bankingDbContext.EmployeeTable.Include(m=>m.AccountDetailsObject).ToListAsync();
+            User user = await _bankingDbContext.UserTable.Include(x=>x.ClientObject)
+                .ThenInclude(y=>y.EmployeeList)
+                .ThenInclude(z=>z.AccountDetailsObject).FirstOrDefaultAsync(y=>y.Id == userId);
+            return user.ClientObject.EmployeeList;
         }
 
         // Get All Beneficiaries
-        public async Task<IEnumerable<Beneficiary>> GetBeneficiariesAsync()
+        public async Task<IEnumerable<Beneficiary>> GetBeneficiariesAsync(int userId)
         {
-            return await _bankingDbContext.BeneficiaryTable.Include(m => m.PaymentsList).Include(e=>e.AccountDetailsObject).ToListAsync();
+            User user= await _bankingDbContext.UserTable.Include(x=>x.ClientObject)
+                .ThenInclude(y=>y.BeneficiaryList).ThenInclude(z=>z.AccountDetailsObject)
+                .FirstOrDefaultAsync(y => y.Id == userId);
+            return user.ClientObject.BeneficiaryList;
         }
 
         // Get Employee by ID with related entities

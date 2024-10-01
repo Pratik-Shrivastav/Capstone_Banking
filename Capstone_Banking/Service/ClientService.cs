@@ -18,9 +18,9 @@ namespace Capstone_Banking.Service
             return _clientRepository.AddEmployeeAsync(employee,userId);
         }
 
-        public Task<IEnumerable<Employee>> GetEmployeesAsync()
+        public Task<IEnumerable<Employee>> GetEmployeesAsync(int userId)
         {
-            return _clientRepository.GetEmployeesAsync();
+            return _clientRepository.GetEmployeesAsync(userId);
         }
 
         public Task<Employee> GetEmployeeByIdAsync(int id)
@@ -44,9 +44,9 @@ namespace Capstone_Banking.Service
             return _clientRepository.AddBeneficiaryAsync(beneficiary,userId);
         }
 
-        public Task<IEnumerable<Beneficiary>> GetBeneficiariesAsync()
+        public Task<IEnumerable<Beneficiary>> GetBeneficiariesAsync(int userId)
         {
-            return _clientRepository.GetBeneficiariesAsync();
+            return _clientRepository.GetBeneficiariesAsync(userId);
         }
 
         public Task<Beneficiary> GetBeneficiaryByIdAsync(int id)

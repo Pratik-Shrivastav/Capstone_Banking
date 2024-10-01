@@ -63,7 +63,8 @@ namespace Capstone_Banking.Controller
         [HttpGet("Employees")]
         public async Task<IActionResult> GetEmployees()
         {
-            var employees = await _clientService.GetEmployeesAsync();
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var employees = await _clientService.GetEmployeesAsync(int.Parse(userId));
             return Ok(employees);
         }
 
@@ -84,7 +85,9 @@ namespace Capstone_Banking.Controller
         [HttpGet("Beneficiaries")]
         public async Task<IActionResult> GetBeneficiaries()
         {
-            var beneficiaries = await _clientService.GetBeneficiariesAsync();
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
+            var beneficiaries = await _clientService.GetBeneficiariesAsync(int.Parse(userId));
             return Ok(beneficiaries);
         }
 
