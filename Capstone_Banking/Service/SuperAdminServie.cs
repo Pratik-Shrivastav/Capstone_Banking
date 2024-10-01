@@ -26,5 +26,11 @@ namespace Capstone_Banking.Service
             return _superAdminRepository.GetDocuments(clientId);
         }
 
+        public void UpdateClientStatus(int clientId, string status)
+        {
+            _superAdminRepository.ClientStatus(clientId, status);
+        }
+
+
     }
 }

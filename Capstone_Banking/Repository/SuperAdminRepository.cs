@@ -36,6 +36,14 @@ namespace Capstone_Banking.Repository
             return client.DocumentList;
         }
 
+        public void ClientStatus(int clientId, string status)
+        {
+            Client client = _db.ClientTable.Find(clientId);
+            client.Status = status;
+            _db.SaveChanges();
+        }
+
+
 
 
 

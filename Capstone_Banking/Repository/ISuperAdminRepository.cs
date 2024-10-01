@@ -8,6 +8,8 @@
 
         public Task<ICollection<Documents>> GetDocuments(int clientId);
 
+        public void ClientStatus(int clientId, string status);
+
 
     }
 }

@@ -7,5 +7,7 @@
 
         public Task<ICollection<Documents>> GetDocumentById(int Clientd);
 
+        public void UpdateClientStatus(int clientId, string status);
+
     }
 }

@@ -63,10 +63,10 @@ namespace Capstone_Banking.Controller
             return fileResult; 
         }
 
-        [HttpPost("ClientStatus/{clientId}")]
-        public void PostClientStatus([FromBody] string value)
+        [HttpPut("ClientStatus/{clientId}")]
+        public void PostClientStatus(int clientId,[FromBody] string value)
         {
-            
+            _superAdminService.UpdateClientStatus(clientId, value);
           
         }
     }
