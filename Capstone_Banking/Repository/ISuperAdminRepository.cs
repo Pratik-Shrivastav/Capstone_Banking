@@ -4,5 +4,8 @@
     {
         public Task<ICollection<Client>> GetAllClients();
 
+        public Task<Client> GetClientById(int id);
+
+
     }
 }

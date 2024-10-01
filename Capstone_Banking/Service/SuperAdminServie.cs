@@ -15,5 +15,11 @@ namespace Capstone_Banking.Service
         {
             return await _superAdminRepository.GetAllClients();
         }
+
+        public async Task<Client> GetClientsById(int id)
+        {
+           return await _superAdminRepository.GetClientById(id);
+        }
+
     }
 }

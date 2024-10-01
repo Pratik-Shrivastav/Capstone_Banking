@@ -35,5 +35,12 @@ namespace Capstone_Banking.Controller
             _bankingDbContext.SaveChanges();
            return user;
         }
+
+        [HttpGet("{id}")]
+        public async Task<Client> GetById(int id)
+        {
+            
+            return await _superAdminService.GetClientsById(id);
+        }
     }
 }
