@@ -78,16 +78,18 @@ namespace Capstone_Banking.Controller
           
         }
 
-        [HttpPut("PaymentStatus/{paymentId}")]
-        public void PaymentStatus(int paymentId, [FromBody] string value)
+        [HttpPut("PaymentStatus/{clientId}/{paymentId}")]
+        public void PaymentStatus(int clientId,int paymentId, [FromBody] string value)
         {
-            _superAdminService.UpdatePaymentStatus(paymentId, value);
+            Console.WriteLine(clientId);
+            _superAdminService.UpdatePaymentStatus(clientId,paymentId, value);
         }
 
-        [HttpPut("SalaryDisbursementStatus/{salaryDisId}")]
-        public void SalaryDisbursementStatus(int salaryDisId, [FromBody] string value)
+        [HttpPut("SalaryDisbursementStatus/{clientId}/{salaryDisId}")]
+        public void SalaryDisbursementStatus(int clientId, int salaryDisId, [FromBody] string value)
         {
-            _superAdminService.UpdateSalaryDisbursementStatus(salaryDisId, value);
+            Console.WriteLine(clientId);
+            _superAdminService.UpdateSalaryDisbursementStatus(clientId,salaryDisId, value);
         }
     }
 }

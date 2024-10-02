@@ -44,6 +44,7 @@ namespace Capstone_Banking.Service
             newAccountDetails.AccountNumber = registerDto.AccountNumber;
             newAccountDetails.Branch = registerDto.Branch;
             newAccountDetails.IFSC = registerDto.IFSC;
+            newAccountDetails.AccountBalance = 100000;
 
             newClient.AccountDetailsObject = newAccountDetails;
             newUser.ClientObject = newClient;

@@ -6,7 +6,6 @@
         public string AccountNumber { get; set; }
         public string IFSC { get; set; }
         public string Branch { get; set; }
-
-        public double AccountBalance { get; set; } = 100000;
+        public double? AccountBalance { get; set; }
     }
 }

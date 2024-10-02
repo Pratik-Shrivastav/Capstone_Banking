@@ -75,7 +75,7 @@ namespace Capstone_Banking.Repository
             _db.SaveChanges();
         }
 
-        public void UpdatePaymentStatus(int paymentId, string status)
+        public void UpdatePaymentStatus(int clientId, int paymentId, string status)
         {
             try
             {
@@ -89,13 +89,19 @@ namespace Capstone_Banking.Repository
                     throw new Exception("Payment not found");
                 }
 
+                Client client = _db.ClientTable.Include(x => x.AccountDetailsObject).FirstOrDefault(o => o.Id == clientId);
+                if (payment == null)
+                {
+                    throw new Exception("Client not found");
+                }
+
                 // Update the payment details
                 payment.Status = status;
                 payment.ApprovedAt = DateTime.Now;
                 payment.ApprovedBy = 4;  // Assumes an admin or approver ID
 
                 // If the status is "Success", add a new transaction
-                if (status == "Success")
+                if (status == "Success" && client.AccountDetailsObject.AccountBalance > payment.Amount)
                 {
                     Transactions transaction = new Transactions
                     {
@@ -104,6 +110,12 @@ namespace Capstone_Banking.Repository
                         TransactionStatus = status,
                     };
                     payment.Transactions.Add(transaction);
+                    client.AccountDetailsObject.AccountBalance = client.AccountDetailsObject.AccountBalance - payment.Amount;
+
+                }
+                if(client.AccountDetailsObject.AccountBalance < payment.Amount)
+                {
+                    throw new Exception("Insufficient Balance");
                 }
 
                 // Save changes to the database
@@ -117,7 +129,7 @@ namespace Capstone_Banking.Repository
             }
         }
 
-        public void UpdateSalaryDisbursementStatus(int salaryDisId, string status)
+        public void UpdateSalaryDisbursementStatus(int clientId,int salaryDisId, string status)
         {
             SalaryDisbursement salaryDisbursement = _db.SalaryDisbursementTable
                 .Include(c => c.TransactionList).Include(x => x.SalaryForList)
@@ -126,27 +138,31 @@ namespace Capstone_Banking.Repository
             salaryDisbursement.Status = status;
             salaryDisbursement.ProcessedAt = DateTime.Now;
 
+
+
             if (status == "Success")
             {
                 foreach (SalaryFor salaryFor in salaryDisbursement.SalaryForList)
                 {
                     Employee employee = _db.EmployeeTable.Find(salaryFor.EmployeeId);
-                    Transactions transaction = new Transactions
+                    Client client = _db.ClientTable.Include(x => x.AccountDetailsObject).FirstOrDefault(o => o.Id == clientId);
+                    if (client.AccountDetailsObject.AccountBalance > employee.Salary)
                     {
-                        TransactionDate = DateTime.Now,
-                        TransactionAmount = employee.Salary,
-                        TransactionStatus = status,
-                        EmployeePaidId = salaryFor.EmployeeId
-                    };
-                    salaryDisbursement.TransactionList.Add(transaction);
+                        Transactions transaction = new Transactions
+                        {
+                            TransactionDate = DateTime.Now,
+                            TransactionAmount = employee.Salary,
+                            TransactionStatus = status,
+                            EmployeePaidId = salaryFor.EmployeeId
+                        };
+                        salaryDisbursement.TransactionList.Add(transaction);
+
+                        client.AccountDetailsObject.AccountBalance = client.AccountDetailsObject.AccountBalance - employee.Salary;
+                        _db.SaveChanges();
+                    }
+
                 }
             }
-            _db.SaveChanges();
-
-
-
-
-
 
         }
 
