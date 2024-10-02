@@ -228,28 +228,13 @@ namespace Capstone_Banking.Repository
 
         // In your ClientService class
 
-        public async Task<List<PaymentWithBeneficiaryDto>> GetRecentPaymentsWithBeneficiaryAsync()
+        public async Task<ICollection<Beneficiary>> GetRecentPaymentsWithBeneficiaryAsync(int clientId)
         {
-            var paymentsWithBeneficiary = await (from payment in _bankingDbContext.PaymentTable
-                                                 join beneficiary in _bankingDbContext.BeneficiaryTable
-                                                 on payment.Id equals beneficiary.Id // Assuming BeneficiaryId is the foreign key in Payment
-                                                 orderby payment.CreatedAt descending // Order by most recent payment
-                                                 select new PaymentWithBeneficiaryDto
-                                                 {
-                                                     Id = payment.Id,
-                                                     PaymentType = payment.PaymentType,
-                                                     Amount = payment.Amount,
-                                                     Status = payment.Status,
-                                                     CreatedAt = payment.CreatedAt,
-                                                     BeneficiaryId = beneficiary.Id,
-                                                     BeneficiaryName = beneficiary.BenificiaryName,
-                                                     BeneficiaryCreatedOn = beneficiary.CreatedOn,
-                                                     BeneficiaryIsActive = beneficiary.IsActive
-                                                 })
-                                                  .Take(20) // Return the most recent 20 payments
-                                                  .ToListAsync();
+           Client client = _bankingDbContext.ClientTable.Include(b=>b.BeneficiaryList).ThenInclude(p=>p.PaymentsList).ThenInclude(t=>t.Transactions)
+                .FirstOrDefault(client=>client.Id == clientId);
 
-            return paymentsWithBeneficiary;
+            return client.BeneficiaryList;
+
         }
 
         public async Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync()

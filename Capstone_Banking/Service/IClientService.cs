@@ -24,7 +24,7 @@ namespace Capstone_Banking.Service
         Task<IEnumerable<Beneficiary>> GetActiveBeneficiariesAsync(int userId);
         Task<Payment> GetPaymentByIdAsync(int paymentId);
 
-        public Task<List<PaymentWithBeneficiaryDto>> GetRecentPaymentsWithBeneficiaryAsync();
+        public Task<ICollection<Beneficiary>> GetRecentPaymentsWithBeneficiaryAsync(int clientId);
         Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync();
 
     }

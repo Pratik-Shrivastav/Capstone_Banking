@@ -264,7 +264,8 @@ namespace Capstone_Banking.Controller
         [HttpGet("Payments/Recent")]
         public async Task<IActionResult> GetRecentPayments()
         {
-            var payments = await _clientService.GetRecentPaymentsWithBeneficiaryAsync();
+            string userIdString = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var payments = await _clientService.GetRecentPaymentsWithBeneficiaryAsync(int.Parse(userIdString));
             return Ok(payments);
         }
 
