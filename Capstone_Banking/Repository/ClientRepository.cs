@@ -157,39 +157,54 @@ namespace Capstone_Banking.Repository
         // Payment method
         public async Task<Payment> CreatePaymentAsync(Payment payment, int beneficiaryId, int userId)
         {
-            if (payment == null)
+            // Fetch the user and related client and beneficiaries
+            var user = await _bankingDbContext.UserTable
+                .Include(x => x.ClientObject)
+                .ThenInclude(c => c.BeneficiaryList)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null || user.ClientObject == null)
             {
-                throw new ArgumentNullException(nameof(payment), "Payment cannot be null.");
+                throw new InvalidOperationException("User or client not found.");
             }
 
-            if (string.IsNullOrWhiteSpace(payment.PaymentType))
+            // Log the number of beneficiaries retrieved
+            var beneficiaries = user.ClientObject.BeneficiaryList;
+            Console.WriteLine($"Number of beneficiaries found: {beneficiaries.Count}");
+
+            // Log details of each beneficiary
+            foreach (var b in beneficiaries)
             {
-                throw new ArgumentException("Payment type cannot be null or empty.", nameof(payment.PaymentType));
+                Console.WriteLine($"Beneficiary ID: {b.Id}, IsActive: {b.IsActive}");
             }
 
-            if (payment.Amount <= 0)
-            {
-                throw new ArgumentException("Payment amount must be greater than zero.", nameof(payment.Amount));
-            }
+            // Log the beneficiaryId being searched
+            Console.WriteLine($"Searching for Beneficiary with ID: {beneficiaryId}");
 
-            // Find the beneficiary by ID
-            var beneficiary = await _bankingDbContext.BeneficiaryTable
-                .FirstOrDefaultAsync(b => b.Id == beneficiaryId && b.IsActive);
+            // Find the specific beneficiary
+            var beneficiary = beneficiaries
+                .FirstOrDefault(b => b.Id == beneficiaryId && b.IsActive);
 
             if (beneficiary == null)
             {
                 throw new InvalidOperationException("Beneficiary not found or is not active.");
             }
 
-            // Associate the payment with the beneficiary
-            payment.CreatedAt = DateTime.UtcNow; // Set created date
+            // Create and assign payment
+            payment.CreatedAt = DateTime.UtcNow;
+            payment.Status = "Pending"; // You can modify this based on your logic
 
-            // Add payment to the context
-            await _bankingDbContext.PaymentTable.AddAsync(payment);
+            // Add the payment to the beneficiary's payment list
+            beneficiary.PaymentsList ??= new List<Payment>();
+            beneficiary.PaymentsList.Add(payment);
+
+            // Save changes
             await _bankingDbContext.SaveChangesAsync();
 
-            return payment; // Return the created payment
+            return payment;
         }
+
+
 
 
         // Updated method to get active beneficiaries using the GetBeneficiariesAsync method

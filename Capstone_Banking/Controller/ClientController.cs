@@ -189,38 +189,54 @@ namespace Capstone_Banking.Controller
             public List<int> EmployeeIds { get; set; } = new List<int>();
         }
 
+       
         // POST: api/Client/Beneficiary/Payment
         [HttpPost("Beneficiary/Payment")]
-        public async Task<IActionResult> PostBeneficiaryPayment([FromBody] BeneficiaryPaymentRequest request)
+        public async Task<IActionResult> MakePayment([FromBody] BeneficiaryPaymentRequest request)
         {
-            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            Console.WriteLine($"BeneficiaryId: {request.BeneficiaryId}, PaymentType: {request.PaymentType}, Amount: {request.Amount}");
+            // Retrieve UserId from claims in headers
+            string userIdString = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
 
-            if (request == null || request.BeneficiaryId <= 0 || request.Amount <= 0 || string.IsNullOrWhiteSpace(request.PaymentType))
+            if (string.IsNullOrEmpty(userIdString))
             {
-                return BadRequest("Invalid payment request.");
+                return Unauthorized("User ID is missing in the request.");
+            }
+
+            if (!int.TryParse(userIdString, out int userId))
+            {
+                return BadRequest("Invalid User ID format.");
+            }
+
+            // Validate the request details
+            if (request == null || request.Amount <= 0 || string.IsNullOrEmpty(request.PaymentType))
+            {
+                return BadRequest("Invalid payment data.");
             }
 
             try
             {
+                // Create a new Payment object and set default values
                 var payment = new Payment
                 {
                     PaymentType = request.PaymentType,
                     Amount = request.Amount,
-                    Status = "Pending",
+                    Status = "Pending", // Default status is Pending
                     CreatedAt = DateTime.UtcNow,
-                    ApprovedBy = int.Parse(userId) // Assuming the user who is making the payment
+                    ApprovedBy = 0,     // Will remain null until approved
+                    ApprovedAt = null   // Will remain null until approved
                 };
 
-                // Call the service method to create the payment
-                var result = await _clientService.CreatePaymentAsync(payment, request.BeneficiaryId, int.Parse(userId));
-                return CreatedAtAction(nameof(GetPaymentById), new { id = result.Id }, result);
+                // Call service method to create the payment
+                var createdPayment = await _clientService.CreatePaymentAsync(payment, request.BeneficiaryId, userId);
+                return Ok(createdPayment);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred: {ex.Message}"); // Log the error
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
 
         // GET: api/Client/Payment/{id}
         [HttpGet("Payment/{id}")]
