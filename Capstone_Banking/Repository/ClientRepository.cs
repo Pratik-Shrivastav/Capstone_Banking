@@ -1,4 +1,5 @@
 ﻿using Capstone_Banking.Data;
+using Capstone_Banking.Dto;
 using Capstone_Banking.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -224,5 +225,65 @@ namespace Capstone_Banking.Repository
                 .Include(p => p.Transactions) // Include related transactions if necessary
                 .FirstOrDefaultAsync(p => p.Id == paymentId);
         }
+
+        // In your ClientService class
+
+        public async Task<List<PaymentWithBeneficiaryDto>> GetRecentPaymentsWithBeneficiaryAsync()
+        {
+            var paymentsWithBeneficiary = await (from payment in _bankingDbContext.PaymentTable
+                                                 join beneficiary in _bankingDbContext.BeneficiaryTable
+                                                 on payment.Id equals beneficiary.Id // Assuming BeneficiaryId is the foreign key in Payment
+                                                 orderby payment.CreatedAt descending // Order by most recent payment
+                                                 select new PaymentWithBeneficiaryDto
+                                                 {
+                                                     Id = payment.Id,
+                                                     PaymentType = payment.PaymentType,
+                                                     Amount = payment.Amount,
+                                                     Status = payment.Status,
+                                                     CreatedAt = payment.CreatedAt,
+                                                     BeneficiaryId = beneficiary.Id,
+                                                     BeneficiaryName = beneficiary.BenificiaryName,
+                                                     BeneficiaryCreatedOn = beneficiary.CreatedOn,
+                                                     BeneficiaryIsActive = beneficiary.IsActive
+                                                 })
+                                                  .Take(20) // Return the most recent 20 payments
+                                                  .ToListAsync();
+
+            return paymentsWithBeneficiary;
+        }
+
+        public async Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync()
+        {
+            var salaryDisbursementList =  await _bankingDbContext.SalaryDisbursementTable
+                .Include(sd => sd.SalaryForList) // Include related SalaryFor entities
+                .Include(sd => sd.TransactionList)
+                .OrderByDescending(od=>od.ProcessedAt)// Include related Transactions for Salary Disbursements
+                .ToListAsync();
+
+            List<SalaryDisbursementResponseDto>  salaryDisbursementResponseDtos = new List<SalaryDisbursementResponseDto>();
+
+            foreach(var salarydisbursement in salaryDisbursementList)
+            {
+                SalaryDisbursementResponseDto responseDto = new SalaryDisbursementResponseDto()
+                {
+                    Id = salarydisbursement.Id,
+                    Amount = salarydisbursement.Amount,
+                    ProcessedAt = salarydisbursement.ProcessedAt,
+                    Status = salarydisbursement.Status,
+                    TransactionList = salarydisbursement.TransactionList,
+                    EmployeeList = new List<Employee>()
+                };
+                    
+                foreach(var salaryFor in salarydisbursement.SalaryForList)
+                {
+                   var employee =  _bankingDbContext.EmployeeTable.Find(salaryFor.EmployeeId);
+                    responseDto.EmployeeList.Add(employee);
+                }   
+                salaryDisbursementResponseDtos.Add(responseDto);
+            }
+            return salaryDisbursementResponseDtos;
+        }
+
+
     }
 }

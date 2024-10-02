@@ -1,4 +1,6 @@
-﻿using Capstone_Banking.Model;
+﻿using Capstone_Banking.Data;
+using Capstone_Banking.Dto;
+using Capstone_Banking.Model;
 using Capstone_Banking.Repository;
 
 namespace Capstone_Banking.Service
@@ -83,6 +85,15 @@ namespace Capstone_Banking.Service
         {
             return await _clientRepository.GetPaymentByIdAsync(paymentId);
         }
+        public async Task<List<PaymentWithBeneficiaryDto>> GetRecentPaymentsWithBeneficiaryAsync()
+        {
+            return await _clientRepository.GetRecentPaymentsWithBeneficiaryAsync();
+        }
 
+        // New methods for salary disbursement retrieval
+        public async Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync()
+        {
+            return await _clientRepository.GetSalaryDisbursementsAsync(); // Call the repository method for salary disbursements
+        }
     }
 }

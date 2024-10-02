@@ -260,7 +260,21 @@ namespace Capstone_Banking.Controller
         }
 
 
+        // GET: api/Client/Payments/Recent
+        [HttpGet("Payments/Recent")]
+        public async Task<IActionResult> GetRecentPayments()
+        {
+            var payments = await _clientService.GetRecentPaymentsWithBeneficiaryAsync();
+            return Ok(payments);
+        }
 
+        // GET: api/Client/Payments/SalaryDisbursements
+        [HttpGet("Payments/SalaryDisbursements")]
+        public async Task<IActionResult> GetSalaryDisbursements()
+        {
+            var salaryDisbursements = await _clientService.GetSalaryDisbursementsAsync();
+            return Ok(salaryDisbursements);
+        }
 
     }
     }

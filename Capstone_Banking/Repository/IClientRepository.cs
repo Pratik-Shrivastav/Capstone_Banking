@@ -1,4 +1,5 @@
-﻿using Capstone_Banking.Model;
+﻿using Capstone_Banking.Dto;
+using Capstone_Banking.Model;
 
 namespace Capstone_Banking.Repository
 {
@@ -21,5 +22,8 @@ namespace Capstone_Banking.Repository
         Task<Payment> CreatePaymentAsync(Payment payment, int beneficiaryId, int userId);
         Task<IEnumerable<Beneficiary>> GetActiveBeneficiariesAsync(int userId);
         Task<Payment> GetPaymentByIdAsync(int paymentId);
+
+        public Task<List<PaymentWithBeneficiaryDto>> GetRecentPaymentsWithBeneficiaryAsync();
+        public  Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync();
     }
 }
