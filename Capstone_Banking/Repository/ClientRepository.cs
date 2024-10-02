@@ -256,8 +256,7 @@ namespace Capstone_Banking.Repository
         {
             var salaryDisbursementList =  await _bankingDbContext.SalaryDisbursementTable
                 .Include(sd => sd.SalaryForList) // Include related SalaryFor entities
-                .Include(sd => sd.TransactionList)
-                .OrderByDescending(od=>od.ProcessedAt)// Include related Transactions for Salary Disbursements
+                .Include(sd => sd.TransactionList) // Include related Transactions for Salary Disbursements
                 .ToListAsync();
 
             List<SalaryDisbursementResponseDto>  salaryDisbursementResponseDtos = new List<SalaryDisbursementResponseDto>();

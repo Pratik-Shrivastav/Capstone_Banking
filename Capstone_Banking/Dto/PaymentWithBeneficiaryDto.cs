@@ -1,4 +1,6 @@
-﻿namespace Capstone_Banking.Dto
+﻿using Capstone_Banking.Model;
+
+namespace Capstone_Banking.Dto
 {
     public class PaymentWithBeneficiaryDto
     {
@@ -11,6 +13,10 @@
         public string BeneficiaryName { get; set; }
         public DateTime BeneficiaryCreatedOn { get; set; }
         public bool BeneficiaryIsActive { get; set; }
+
+        
+        public List<Transactions> Transactions { get; set; } = new List<Transactions>();
     }
+
 
 }
