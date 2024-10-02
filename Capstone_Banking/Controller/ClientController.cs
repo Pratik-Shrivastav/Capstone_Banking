@@ -2,6 +2,7 @@
 using Capstone_Banking.Data;
 using Capstone_Banking.Model;
 using Capstone_Banking.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Capstone_Banking.Controller
 {
+    [Authorize(Roles = "Client")]
+
     [Route("api/[controller]")]
     [ApiController]
     public class ClientController : ControllerBase

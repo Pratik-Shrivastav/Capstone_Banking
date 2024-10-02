@@ -15,8 +15,9 @@ namespace Capstone_Banking.CommonFunction
                 new Claim(JwtRegisteredClaimNames.Sub, configuration["Jwt:Subject"]),
                 new Claim("UserId",user.Id.ToString()),
                 new Claim("Display Name",user.Name),
-                new Claim("Email", user.Email)
-            };
+                new Claim("Email", user.Email),
+                new Claim(ClaimTypes.Role, user.Role)
+        };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
             var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

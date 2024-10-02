@@ -3,13 +3,14 @@ using Capstone_Banking.Data;
 using Capstone_Banking.Dto;
 using Capstone_Banking.Model;
 using Capstone_Banking.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Capstone_Banking.Controller
 {
-
+    [Authorize(Roles = "SuperAdmin")]
     [Route("api/[controller]")]
     [ApiController]
     public class SuperAdminController : ControllerBase

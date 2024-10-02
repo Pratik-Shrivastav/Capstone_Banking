@@ -3,6 +3,7 @@ using Capstone_Banking.Data;
 using Capstone_Banking.Dto;
 using Capstone_Banking.Model;
 using Capstone_Banking.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +39,7 @@ namespace Capstone_Banking.Controller
             return await _userAuthService.Login(loginData);
         }
 
+        [Authorize(Roles = "Client")]
         [HttpPost("Upload")]
         public async Task<string> Post(IFormFile cin, IFormFile aoa, IFormFile pan)
         {
