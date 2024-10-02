@@ -1,5 +1,6 @@
 ﻿using Capstone_Banking.CommonFunction;
 using Capstone_Banking.Data;
+using Capstone_Banking.Dto;
 using Capstone_Banking.Model;
 using Capstone_Banking.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -51,6 +52,13 @@ namespace Capstone_Banking.Controller
             return await _superAdminService.GetDocumentById(id);
         }
 
+        [HttpGet("SalaryDisbursement/{clientId}")]
+        public async Task<ICollection<SalaryDisbursementResponseDto>> GetSalaryDisbursementClient(int clientId)
+        {
+
+            return await _superAdminService.GetSalaryDisbursementClient(clientId);
+        }
+
         [HttpGet("Download/{fileName}")]
         public async Task<IActionResult> DownloadFile(string fileName)
         {
@@ -64,10 +72,22 @@ namespace Capstone_Banking.Controller
         }
 
         [HttpPut("ClientStatus/{clientId}")]
-        public void PostClientStatus(int clientId,[FromBody] string value)
+        public void ClientStatus(int clientId,[FromBody] string value)
         {
             _superAdminService.UpdateClientStatus(clientId, value);
           
+        }
+
+        [HttpPut("PaymentStatus/{paymentId}")]
+        public void PaymentStatus(int paymentId, [FromBody] string value)
+        {
+            _superAdminService.UpdatePaymentStatus(paymentId, value);
+        }
+
+        [HttpPut("SalaryDisbursementStatus/{salaryDisId}")]
+        public void SalaryDisbursementStatus(int salaryDisId, [FromBody] string value)
+        {
+            _superAdminService.UpdateSalaryDisbursementStatus(salaryDisId, value);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Capstone_Banking.Model
         public DateTime CreatedAt { get; set; }
         public int ApprovedBy { get; set; }  
         public DateTime? ApprovedAt { get; set; }
-        public ICollection<Transactions>? Transactions { get; set; }
+        public ICollection<Transactions>? Transactions { get; set; } = new List<Transactions>();
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using Capstone_Banking.Repository;
+﻿using Capstone_Banking.Dto;
+using Capstone_Banking.Repository;
 
 namespace Capstone_Banking.Service
 {
@@ -30,6 +31,22 @@ namespace Capstone_Banking.Service
         {
             _superAdminRepository.ClientStatus(clientId, status);
         }
+
+        public async Task UpdatePaymentStatus(int payementId, string status)
+        {
+            _superAdminRepository.UpdatePaymentStatus(payementId, status);
+        }
+
+        public async Task<ICollection<SalaryDisbursementResponseDto>> GetSalaryDisbursementClient(int clientId)
+        {
+            return await _superAdminRepository.GetSalaryDisbursementClient(clientId);
+        }
+
+        public async Task UpdateSalaryDisbursementStatus(int salaryDisId, string status)
+        {
+            _superAdminRepository.UpdateSalaryDisbursementStatus(salaryDisId, status);
+        }
+
 
 
     }

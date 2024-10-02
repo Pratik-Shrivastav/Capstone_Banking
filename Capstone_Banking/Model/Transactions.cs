@@ -6,5 +6,7 @@
         public DateTime TransactionDate { get; set; }
         public double TransactionAmount { get; set; }
         public string TransactionStatus { get; set; }
+
+        public int? EmployeePaidId { get; set; }
     }
 }
