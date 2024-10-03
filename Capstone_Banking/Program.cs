@@ -21,6 +21,8 @@ builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<ISuperAdminRepository, SuperAdminRepository>();
 builder.Services.AddScoped<ISuperAdminService, SuperAdminServie>();
+builder.Services.AddScoped<IBankRepository, BankRepository>();
+builder.Services.AddScoped<IBankService, BankService>();
 
 
 builder.Services.AddScoped<UploadHandler>();
