@@ -293,7 +293,8 @@ namespace Capstone_Banking.Controller
         [HttpGet("Payments/SalaryDisbursements")]
         public async Task<IActionResult> GetSalaryDisbursements()
         {
-            var salaryDisbursements = await _clientService.GetSalaryDisbursementsAsync();
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var salaryDisbursements = await _clientService.GetSalaryDisbursementsAsync(int.Parse(userId));
             return Ok(salaryDisbursements);
         }
         [HttpGet("auditlogs")]

@@ -92,9 +92,9 @@ namespace Capstone_Banking.Service
         }
 
         // New methods for salary disbursement retrieval
-        public async Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync()
+        public async Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync(int userId)
         {
-            return await _clientRepository.GetSalaryDisbursementsAsync(); // Call the repository method for salary disbursements
+            return await _clientRepository.GetSalaryDisbursementsAsync(userId); // Call the repository method for salary disbursements
         }
         public Task<ICollection<AuditLog>> GetAuditLogs(int userId)
 

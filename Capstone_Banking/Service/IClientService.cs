@@ -26,7 +26,7 @@ namespace Capstone_Banking.Service
         Task<Payment> GetPaymentByIdAsync(int paymentId);
 
         public Task<ICollection<Beneficiary>> GetRecentPaymentsWithBeneficiaryAsync(int clientId);
-        Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync();
+        Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync(int userId);
 
         public Task<ICollection<AuditLog>> GetAuditLogs(int userId);
 

@@ -238,12 +238,17 @@ namespace Capstone_Banking.Repository
 
         }
 
-        public async Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync()
+        public async Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync(int userId)
         {
-            var salaryDisbursementList =  await _bankingDbContext.SalaryDisbursementTable
-                .Include(sd => sd.SalaryForList) // Include related SalaryFor entities
-                .Include(sd => sd.TransactionList) // Include related Transactions for Salary Disbursements
-                .ToListAsync();
+            User user = await _bankingDbContext.UserTable
+                .Include(c => c.ClientObject)
+                .ThenInclude(s => s.SalaryDisbursementList)
+                .ThenInclude(st=>st.SalaryForList)
+                .Include(c => c.ClientObject)
+                .ThenInclude(s => s.SalaryDisbursementList)
+                .ThenInclude(t => t.TransactionList)
+                .FirstOrDefaultAsync(u=>u.Id == userId);
+            var salaryDisbursementList = user.ClientObject.SalaryDisbursementList;
 
             List<SalaryDisbursementResponseDto>  salaryDisbursementResponseDtos = new List<SalaryDisbursementResponseDto>();
 
