@@ -1,4 +1,5 @@
-﻿using Capstone_Banking.Data;
+﻿using Capstone_Banking.CommonFunction;
+using Capstone_Banking.Data;
 using Capstone_Banking.Dto;
 using Capstone_Banking.Model;
 using Microsoft.EntityFrameworkCore;
@@ -75,7 +76,7 @@ namespace Capstone_Banking.Repository
             _db.SaveChanges();
         }
 
-        public void UpdatePaymentStatus(int clientId, int paymentId, string status)
+        public void UpdatePaymentStatus(int clientId, int beneficiaryId, int paymentId, string status)
         {
             try
             {
@@ -83,6 +84,7 @@ namespace Capstone_Banking.Repository
                 Payment payment =  _db.PaymentTable
                     .Include(x => x.Transactions)
                     .FirstOrDefault(o => o.Id == paymentId);
+                Beneficiary beneficiary = _db.BeneficiaryTable.Include(c=>c.AccountDetailsObject).FirstOrDefault(x=>x.Id==beneficiaryId);
 
                 if (payment == null)
                 {
@@ -113,6 +115,9 @@ namespace Capstone_Banking.Repository
                         };
                         payment.Transactions.Add(transaction);
                         client.AccountDetailsObject.AccountBalance = client.AccountDetailsObject.AccountBalance - payment.Amount;
+                        string subject = "Account Credited";
+                        string body = $"Amount {payment.Amount} had been credited to the AccountNo: {beneficiary.AccountDetailsObject.AccountNumber}";
+                        EmailHandler.SendEmail(beneficiary.Email, subject, body);
 
                     }
                     else if (client.AccountDetailsObject.AccountBalance < payment.Amount)
@@ -146,7 +151,7 @@ namespace Capstone_Banking.Repository
             {
                 foreach (SalaryFor salaryFor in salaryDisbursement.SalaryForList)
                 {
-                    Employee employee = _db.EmployeeTable.Find(salaryFor.EmployeeId);
+                    Employee employee = _db.EmployeeTable.Include(c=>c.AccountDetailsObject).FirstOrDefault(o=>o.EmployeeId==salaryFor.EmployeeId);
                     Client client = _db.ClientTable.Include(x => x.AccountDetailsObject).FirstOrDefault(o => o.Id == clientId);
                     if (client.AccountDetailsObject.AccountBalance > employee.Salary)
                     {
@@ -161,6 +166,10 @@ namespace Capstone_Banking.Repository
 
                         client.AccountDetailsObject.AccountBalance = client.AccountDetailsObject.AccountBalance - employee.Salary;
                         _db.SaveChanges();
+                        string subject = "Salary Credited";
+                        string body = $"Amount of {employee.Salary} has been credited to your account from {client.CompanyName}" +
+                            $"to your AccountNo: {employee.AccountDetailsObject.AccountNumber}";
+                        EmailHandler.SendEmail(employee.Email, subject, body);
                     }
                 }
             }

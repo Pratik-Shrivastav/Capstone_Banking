@@ -11,7 +11,7 @@ namespace Capstone_Banking.Service
 
         public void UpdateClientStatus(int clientId, string status);
 
-        public Task UpdatePaymentStatus(int clientId,int payementId, string status);
+        public Task UpdatePaymentStatus(int clientId,int beneficiaryId,int payementId, string status);
 
         public Task<ICollection<SalaryDisbursementResponseDto>> GetSalaryDisbursementClient(int clientId);
 

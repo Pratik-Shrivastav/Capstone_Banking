@@ -32,9 +32,9 @@ namespace Capstone_Banking.Service
             _superAdminRepository.ClientStatus(clientId, status);
         }
 
-        public async Task UpdatePaymentStatus(int clientId, int payementId, string status)
+        public async Task UpdatePaymentStatus(int clientId,int beneficiaryId, int payementId, string status)
         {
-            _superAdminRepository.UpdatePaymentStatus(clientId,payementId, status);
+            _superAdminRepository.UpdatePaymentStatus(clientId, beneficiaryId,payementId, status);
         }
 
         public async Task<ICollection<SalaryDisbursementResponseDto>> GetSalaryDisbursementClient(int clientId)

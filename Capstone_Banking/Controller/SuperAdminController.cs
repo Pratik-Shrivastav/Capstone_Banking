@@ -88,11 +88,11 @@ namespace Capstone_Banking.Controller
 
         }
 
-        [HttpPut("PaymentStatus/{clientId}/{paymentId}")]
-        public void PaymentStatus(int clientId,int paymentId, [FromBody] string value)
+        [HttpPut("PaymentStatus/{clientId}/{beneficiaryId}/{paymentId}")]
+        public void PaymentStatus(int clientId,int beneficiaryId, int paymentId, [FromBody] string value)
         {
             Console.WriteLine(clientId);
-            _superAdminService.UpdatePaymentStatus(clientId,paymentId, value);
+            _superAdminService.UpdatePaymentStatus(clientId, beneficiaryId, paymentId, value);
             string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
             AddAuditLogs.AddLog(int.Parse(userId), "Payment Status", $"ClientId: {clientId} PaymentId-{paymentId} {value}");
         }
