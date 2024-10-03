@@ -65,6 +65,13 @@ namespace Capstone_Banking.Controller
             return await _userAuthService.GetUserById(int.Parse(userId));
         }
 
+        [HttpGet("Usernames/{username}")]
+        public async Task<bool> GetUsernames(string username)
+        {
+            var usernamesPresent = await _userAuthService.GetUniqueUsernames(username);
+            return usernamesPresent;
+        }
+
 
 
     }

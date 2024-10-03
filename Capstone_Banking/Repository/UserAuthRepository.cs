@@ -30,5 +30,12 @@ namespace Capstone_Banking.Repository
             return user;
         }
 
+        public async Task<ICollection<User>> GetAllUser()
+        {
+            return await _bankingDbContext.UserTable.ToListAsync();
+        }
+
     }
+    
+
 }

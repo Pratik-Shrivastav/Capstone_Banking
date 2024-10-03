@@ -3,6 +3,7 @@ using Capstone_Banking.CommonFunction;
 using Capstone_Banking.Dto;
 using Capstone_Banking.Model;
 using Capstone_Banking.Repository;
+using System.Linq;
 namespace Capstone_Banking.Service
 {
     public class UserAuthService:IUserAuthService
@@ -98,5 +99,19 @@ namespace Capstone_Banking.Service
         {
            return await _userAuthRepository.GetUserByIdDocumnet(id);
         }
+        public async Task<bool> GetUniqueUsernames(string username)
+        {
+            // Get the list of users asynchronously
+            var users = await _userAuthRepository.GetAllUser();
+
+            // Check if the username exists in the list of usernames
+            var isUsernameTaken = users.Any(user => user.UserName.Equals(username, StringComparison.OrdinalIgnoreCase));
+
+            // Return true if username is not taken (unique), false otherwise
+            return !isUsernameTaken;
+        }
+
+
+
     }
 }

@@ -10,6 +10,8 @@ namespace Capstone_Banking.Service
 
         public Task<User> GetUserById(int id);
 
+        public Task<bool> GetUniqueUsernames(string username);
+
 
     }
 }
