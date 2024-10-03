@@ -43,12 +43,14 @@ namespace Capstone_Banking.Controller
         [HttpPost("Upload")]
         public async Task<string> Post(IFormFile cin, IFormFile aoa, IFormFile pan)
         {
+
             ICollection<IFormFile> fileList = new List<IFormFile>();
             BankingDbContext bankingDbContext = new BankingDbContext();
             string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
             fileList.Add(aoa);
             fileList.Add(pan);
             fileList.Add(cin);
+
 
             if (fileList != null)
             {

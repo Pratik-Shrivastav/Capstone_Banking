@@ -101,23 +101,25 @@ namespace Capstone_Banking.Repository
                 payment.ApprovedBy = 4;  // Assumes an admin or approver ID
 
                 // If the status is "Success", add a new transaction
-                if (status == "Success" && client.AccountDetailsObject.AccountBalance > payment.Amount)
+                if (status == "Success")
                 {
-                    Transactions transaction = new Transactions
+                    if (client.AccountDetailsObject.AccountBalance > payment.Amount) 
                     {
-                        TransactionDate = DateTime.Now,
-                        TransactionAmount = payment.Amount,
-                        TransactionStatus = status,
-                    };
-                    payment.Transactions.Add(transaction);
-                    client.AccountDetailsObject.AccountBalance = client.AccountDetailsObject.AccountBalance - payment.Amount;
+                        Transactions transaction = new Transactions
+                        {
+                            TransactionDate = DateTime.Now,
+                            TransactionAmount = payment.Amount,
+                            TransactionStatus = status,
+                        };
+                        payment.Transactions.Add(transaction);
+                        client.AccountDetailsObject.AccountBalance = client.AccountDetailsObject.AccountBalance - payment.Amount;
 
+                    }
+                    else if (client.AccountDetailsObject.AccountBalance < payment.Amount)
+                    {
+                        throw new Exception("Insufficient Balance");
+                    }
                 }
-                if(client.AccountDetailsObject.AccountBalance < payment.Amount)
-                {
-                    throw new Exception("Insufficient Balance");
-                }
-
                 // Save changes to the database
                 _db.SaveChanges();
                 Console.WriteLine("Changes saved successfully.");
@@ -163,6 +165,7 @@ namespace Capstone_Banking.Repository
 
                 }
             }
+            _db.SaveChanges();
 
         }
 

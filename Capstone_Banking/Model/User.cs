@@ -11,7 +11,7 @@
         public DateTime CreatedOn { get; set; }
         public Bank? BankObject { get; set; } 
         public Client? ClientObject { get; set; }
-        public ICollection<AuditLog>? AuditLogList { get; set; } = new List<AuditLog>();
+        public ICollection<AuditLog>? AuditLogList { get; set; }
 
 
     }

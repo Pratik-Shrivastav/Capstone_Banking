@@ -1,8 +1,10 @@
 ﻿using BCrypt.Net;
 using Capstone_Banking.CommonFunction;
+using Capstone_Banking.Data;
 using Capstone_Banking.Dto;
 using Capstone_Banking.Model;
 using Capstone_Banking.Repository;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 namespace Capstone_Banking.Service
 {
@@ -22,6 +24,13 @@ namespace Capstone_Banking.Service
             User newUser = new User();
             Client newClient = new Client();
             AccountDetails newAccountDetails = new AccountDetails();
+            AuditLog auditLog = new AuditLog()
+            {
+                Action="Register",
+                Timestamp=DateTime.Now,
+                Details=$"{registerDto.Role} Registered"
+
+            };
 
             newUser.Name= registerDto.FounderName;
             newUser.Email = registerDto.Email;
@@ -50,50 +59,82 @@ namespace Capstone_Banking.Service
             newClient.AccountDetailsObject = newAccountDetails;
             newUser.ClientObject = newClient;
 
+            newUser.AuditLogList = new List<AuditLog>();
+            newUser.AuditLogList.Add(auditLog);
+
             return await _userAuthRepository.AddUser(newUser);
         }
 
         public async Task<LoginResponse> Login(LoginData loginData)
         {
-            User user = await _userAuthRepository.GetUserByUserName(loginData.UserName);
-            LoginResponse loginResponse = new LoginResponse();
-            if (user == null)
+            using (var dbContext = new BankingDbContext()) // Use a single DbContext instance
             {
-                loginResponse.Message = "User Not Found";
-                loginResponse.Success = false;
-                return loginResponse;
-            }
-            else
-            {
-                bool pass = BCrypt.Net.BCrypt.EnhancedVerify( loginData.Password, user.Password);
-        
-                if (pass)
-                {
-                    loginResponse.Message = "Login Successful";
-                    loginResponse.Success = true;
-                    loginResponse.Token= GenerateToken.GetToken(user, _configuration);
-                    if (user.ClientObject == null)
-                    {
-                        loginResponse.Status = "Success";
-                    }
-                    else
-                    {
-                        loginResponse.Status = user.ClientObject.Status;
-                    }
-                    loginResponse.Role = user.Role;
-                    loginResponse.Id = user.Id;
+                User user = await dbContext.UserTable
+                    .Include(u=> u.AuditLogList)
+                    .Include(u=> u.ClientObject)
+                    .FirstOrDefaultAsync(u => u.UserName == loginData.UserName); // Retrieve user
 
+                LoginResponse loginResponse = new LoginResponse();
+
+                if (user == null)
+                {
+                    loginResponse.Message = "User Not Found";
+                    loginResponse.Success = false;
+                    return loginResponse;
                 }
                 else
                 {
-                    loginResponse.Message = "Invalid Credentials";
-                    loginResponse.Success = false;
-                    loginResponse.Status = user.ClientObject.Status;
-                }
-                return loginResponse;
-            }
+                    bool pass = BCrypt.Net.BCrypt.EnhancedVerify(loginData.Password, user.Password);
 
+                    if (pass)
+                    {
+                        loginResponse.Message = "Login Successful";
+                        loginResponse.Success = true;
+                        loginResponse.Token = GenerateToken.GetToken(user, _configuration);
+
+                        if (user.ClientObject == null) 
+                        {
+                            loginResponse.Status = "Success";
+                        }
+                        else
+                        {
+                            loginResponse.Status = user.ClientObject.Status;
+
+                        }
+                        loginResponse.Role = user.Role;
+                        loginResponse.Id = user.Id;
+
+                        // Create and save audit log
+                        AuditLog auditLog = new AuditLog()
+                        {
+                            Action = "Login",
+                            Timestamp = DateTime.Now,
+                            Details = $"{user.Name} LogIn"
+                        };
+
+                        // Ensure AuditLogList is initialized
+                        if (user.AuditLogList == null)
+                        {
+                            user.AuditLogList = new List<AuditLog>();
+                        }
+
+                        // Add audit log to user's list
+                        user.AuditLogList.Add(auditLog);
+
+                        // Save changes in the same context
+                        await dbContext.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        loginResponse.Message = "Invalid Credentials";
+                        loginResponse.Success = false;
+                        loginResponse.Status = user.ClientObject?.Status; // Check if ClientObject is null
+                    }
+                    return loginResponse;
+                }
+            }
         }
+
 
         public async Task<User> GetUserById(int id)
         {
