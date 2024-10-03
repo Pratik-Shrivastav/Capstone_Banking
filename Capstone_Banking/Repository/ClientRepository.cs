@@ -1,6 +1,7 @@
 ﻿using Capstone_Banking.Data;
 using Capstone_Banking.Dto;
 using Capstone_Banking.Model;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -266,6 +267,14 @@ namespace Capstone_Banking.Repository
                 salaryDisbursementResponseDtos.Add(responseDto);
             }
             return salaryDisbursementResponseDtos;
+        }
+
+        public async Task<ICollection<AuditLog>> GetAuditLogs(int userId)
+
+        {
+            // Fetch audit logs that are related to the specific user
+            User user = await _bankingDbContext.UserTable.Include(a=>a.AuditLogList).FirstOrDefaultAsync(p=>p.Id == userId);
+            return user.AuditLogList;   
         }
 
 

@@ -1,5 +1,6 @@
 ﻿using Capstone_Banking.Dto;
 using Capstone_Banking.Model;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Capstone_Banking.Service
 {
@@ -26,6 +27,8 @@ namespace Capstone_Banking.Service
 
         public Task<ICollection<Beneficiary>> GetRecentPaymentsWithBeneficiaryAsync(int clientId);
         Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync();
+
+        public Task<ICollection<AuditLog>> GetAuditLogs(int userId);
 
     }
 }

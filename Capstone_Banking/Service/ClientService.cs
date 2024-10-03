@@ -2,6 +2,7 @@
 using Capstone_Banking.Dto;
 using Capstone_Banking.Model;
 using Capstone_Banking.Repository;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Capstone_Banking.Service
 {
@@ -94,6 +95,11 @@ namespace Capstone_Banking.Service
         public async Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync()
         {
             return await _clientRepository.GetSalaryDisbursementsAsync(); // Call the repository method for salary disbursements
+        }
+        public Task<ICollection<AuditLog>> GetAuditLogs(int userId)
+
+        {
+            return _clientRepository.GetAuditLogs(userId);
         }
     }
 }

@@ -296,7 +296,23 @@ namespace Capstone_Banking.Controller
             var salaryDisbursements = await _clientService.GetSalaryDisbursementsAsync();
             return Ok(salaryDisbursements);
         }
+        [HttpGet("auditlogs")]
+        public async Task<ActionResult<IEnumerable<AuditLog>>> GetAuditLogs()
+        {
 
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
+            // Fetch audit logs for the given user
+            var auditLogs = await _clientService.GetAuditLogs(int.Parse(userId));
+
+            // Check if logs exist
+            if (auditLogs == null)
+            {
+                return NotFound($"No audit logs found for user with ID {userId}");
+            }
+
+            return Ok(auditLogs);
+        }
     }
     }
 
