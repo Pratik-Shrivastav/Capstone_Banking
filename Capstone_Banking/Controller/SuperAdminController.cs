@@ -33,9 +33,11 @@ namespace Capstone_Banking.Controller
         [HttpPost]
         public User Post([FromBody] User user)
         {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
             user.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(user.Password);
             _bankingDbContext.UserTable.Add(user);
             _bankingDbContext.SaveChanges();
+            AddAuditLogs.AddLog(int.Parse(userId),"Super Admin Registered", "Registered");
            return user;
         }
 
@@ -63,12 +65,16 @@ namespace Capstone_Banking.Controller
         [HttpGet("Download/{fileName}")]
         public async Task<IActionResult> DownloadFile(string fileName)
         {
+            
             BankingDbContext bankingDbContext = new BankingDbContext();
             var fileResult = await (new UploadHandler(bankingDbContext)).DownloadFile(fileName);
             if (fileResult == null)
             {
                 return NotFound("File not found");
             }
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            AddAuditLogs.AddLog(int.Parse(userId), "File Download", "File Downloaded");
+
             return fileResult; 
         }
 
@@ -76,7 +82,10 @@ namespace Capstone_Banking.Controller
         public void ClientStatus(int clientId,[FromBody] string value)
         {
             _superAdminService.UpdateClientStatus(clientId, value);
-          
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            AddAuditLogs.AddLog(int.Parse(userId), "Client Status", value);
+
+
         }
 
         [HttpPut("PaymentStatus/{clientId}/{paymentId}")]
@@ -84,6 +93,8 @@ namespace Capstone_Banking.Controller
         {
             Console.WriteLine(clientId);
             _superAdminService.UpdatePaymentStatus(clientId,paymentId, value);
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            AddAuditLogs.AddLog(int.Parse(userId), "Payment Status", $"ClientId: {clientId} PaymentId-{paymentId} {value}");
         }
 
         [HttpPut("SalaryDisbursementStatus/{clientId}/{salaryDisId}")]
@@ -91,6 +102,8 @@ namespace Capstone_Banking.Controller
         {
             Console.WriteLine(clientId);
             _superAdminService.UpdateSalaryDisbursementStatus(clientId,salaryDisId, value);
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            AddAuditLogs.AddLog(int.Parse(userId), "Salary Disbursement Status", $"ClientId: {clientId} SalaryId-{salaryDisId} {value}");
         }
     }
 }

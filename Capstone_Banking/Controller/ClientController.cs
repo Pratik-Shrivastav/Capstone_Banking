@@ -41,6 +41,7 @@ namespace Capstone_Banking.Controller
             {
                 employee.CreatedAt = DateTime.UtcNow; // Set createdAt date
                 await _clientService.AddEmployeeAsync(employee, int.Parse(userId)); // Add employee
+                AddAuditLogs.AddLog(int.Parse(userId), "Employee Add", $" Added Employee");
                 return CreatedAtAction(nameof(GetEmployeeById), new { id = employee.EmployeeId }, employee);
             }
             catch (Exception ex)
@@ -56,12 +57,14 @@ namespace Capstone_Banking.Controller
         public async Task<IActionResult> PostBeneficiary(Beneficiary beneficiary)
         {
             string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
             if (beneficiary == null)
             {
                 return BadRequest("Beneficiary is null");
             }
 
             var createdBeneficiary = await _clientService.AddBeneficiaryAsync(beneficiary, int.Parse(userId));
+            AddAuditLogs.AddLog(int.Parse(userId), "Beneficiary Add", $" Added Beneficiary");
             return CreatedAtAction(nameof(GetBeneficiaryById), new { id = createdBeneficiary.Id }, createdBeneficiary);
         }
 
@@ -120,12 +123,16 @@ namespace Capstone_Banking.Controller
                 employee.EmployeeId = id;
                 return BadRequest("Employee ID mismatch");
             }*/
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
             employee.EmployeeId = id;
             var updatedEmployee = await _clientService.UpdateEmployeeAsync(employee);
             if (updatedEmployee == null)
             {
                 return NotFound("Employee not found");
             }
+            AddAuditLogs.AddLog(int.Parse(userId), "Employee Updated", $" Updated EmployeeId: {id}");
+
 
             return Ok(updatedEmployee);
         }
@@ -141,10 +148,12 @@ namespace Capstone_Banking.Controller
             beneficiary.Id = id;
 
             var updatedBeneficiary = await _clientService.UpdateBeneficiaryAsync(beneficiary);
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
             if (updatedBeneficiary == null)
             {
                 return NotFound("Beneficiary not found");
             }
+            AddAuditLogs.AddLog(int.Parse(userId), "Beneficiary Updated", $" Updated BeneficiaryId: {id}");
 
             return Ok(updatedBeneficiary);
         }
@@ -153,6 +162,9 @@ namespace Capstone_Banking.Controller
         [HttpDelete("Employee/{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            AddAuditLogs.AddLog(int.Parse(userId), "Employee Deleted", $" Deleted EmployeeId: {id}");
+
             await _clientService.DeleteEmployeeAsync(id);
             return NoContent();
         }
@@ -161,6 +173,9 @@ namespace Capstone_Banking.Controller
         [HttpDelete("Beneficiary/{id}")]
         public async Task<IActionResult> DeleteBeneficiary(int id)
         {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            AddAuditLogs.AddLog(int.Parse(userId), "Beneficiary Deleted", $" Deleted BeneficiaryId: {id}");
+
             await _clientService.DeleteBeneficiaryAsync(id);
             return NoContent();
         }
@@ -183,7 +198,7 @@ namespace Capstone_Banking.Controller
 
             // Call the service to disburse salaries
             var result = await _clientService.DisburseSalariesAsync(salaryDisbursement, int.Parse(userId), request.EmployeeIds);
-
+            AddAuditLogs.AddLog(int.Parse(userId), "Salary Disbursement", $" created Salary Disbursement: {result.Id}");
             return Ok(result); // Return the disbursement information
         }
         public class SalaryDisbursementRequest
@@ -232,6 +247,8 @@ namespace Capstone_Banking.Controller
 
                 // Call service method to create the payment
                 var createdPayment = await _clientService.CreatePaymentAsync(payment, request.BeneficiaryId, userId);
+                AddAuditLogs.AddLog(int.Parse(userIdString), "Payment", $" created Payment: {createdPayment.Id}");
+
                 return Ok(createdPayment);
             }
             catch (Exception ex)

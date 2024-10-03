@@ -50,8 +50,7 @@ namespace Capstone_Banking.Controller
             fileList.Add(aoa);
             fileList.Add(pan);
             fileList.Add(cin);
-
-
+           
             if (fileList != null)
             {
                 //_uploadHandler.Upload(int.Parse(id), fileList);

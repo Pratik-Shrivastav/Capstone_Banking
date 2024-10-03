@@ -162,7 +162,6 @@ namespace Capstone_Banking.Repository
                         client.AccountDetailsObject.AccountBalance = client.AccountDetailsObject.AccountBalance - employee.Salary;
                         _db.SaveChanges();
                     }
-
                 }
             }
             _db.SaveChanges();

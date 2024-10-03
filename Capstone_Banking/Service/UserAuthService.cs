@@ -109,7 +109,7 @@ namespace Capstone_Banking.Service
                         {
                             Action = "Login",
                             Timestamp = DateTime.Now,
-                            Details = $"{user.Name} LogIn"
+                            Details = $"{user.Role}:{user.Name} LogIn"
                         };
 
                         // Ensure AuditLogList is initialized
