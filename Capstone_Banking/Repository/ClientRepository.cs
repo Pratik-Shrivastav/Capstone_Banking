@@ -105,7 +105,7 @@ namespace Capstone_Banking.Repository
             var employee = await _bankingDbContext.EmployeeTable.FindAsync(id);
             if (employee != null)
             {
-                employee.isActive = false;  // Soft delete by marking as inactive
+                employee.IsActive = false;  // Soft delete by marking as inactive
                 _bankingDbContext.EmployeeTable.Update(employee);
                 await _bankingDbContext.SaveChangesAsync();
             }
@@ -140,7 +140,7 @@ namespace Capstone_Banking.Repository
             }
 
             var salaryForList = employeeIds
-                .Where(eId => user.ClientObject.EmployeeList.Any(e => e.EmployeeId == eId && e.isActive)) // Ensure employee is active
+                .Where(eId => user.ClientObject.EmployeeList.Any(e => e.EmployeeId == eId && e.IsActive)) // Ensure employee is active
                 .Select(eId => new SalaryFor { EmployeeId = eId })
                 .ToList();
 

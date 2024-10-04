@@ -16,3 +16,4 @@ namespace Capstone_Banking.Model
         [StringLength(500, ErrorMessage = "Details must be at most 500 characters long.")]
         public string Details { get; set; }
     }
+}
