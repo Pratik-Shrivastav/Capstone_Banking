@@ -20,10 +20,19 @@ namespace Capstone_Banking.Service
         {
             return _clientRepository.AddEmployeeAsync(employee,userId);
         }
-
-        public Task<(IEnumerable<Employee> employees, int totalCount)> GetEmployeesAsync(int userId, int page, int pageSize)
+        public Task<ICollection<Employee>> GetAllEmployeesAsync(int userId)
         {
-            return _clientRepository.GetEmployeesAsync(userId, page, pageSize);
+            return _clientRepository.GetAllEmployeesAsync(userId);
+        }
+        public Task<ICollection<Employee>> SearchEmployeesAsync(int userId, string searchTerm)
+        {
+            return  _clientRepository.SearchEmployeesAsync(userId, searchTerm);
+        }
+
+
+        public Task<(IEnumerable<Employee> employees, int totalCount)> GetEmployeesPagedAsync(int userId, int page, int pageSize)
+        {
+            return _clientRepository.GetEmployeesPagedAsync(userId, page, pageSize);
         }
 
 
@@ -82,6 +91,17 @@ namespace Capstone_Banking.Service
         {
             return await _clientRepository.GetActiveBeneficiariesAsync(userId);
         }
+
+        public async Task<(IEnumerable<Beneficiary> beneficiaries, int totalCount)> GetBeneficiaryPagedAsync(int userId, int page, int pageSize)
+        {
+            return await _clientRepository.GetBeneficiaryPagedAsync(userId, page, pageSize);
+        }
+
+        public async Task<ICollection<Beneficiary>> SearchBeneficiaryAsync(int userId, string searchTerm)
+        {
+            return await _clientRepository.SearchBeneficiaryAsync(userId, searchTerm);
+        }
+
 
         public async Task<Payment> GetPaymentByIdAsync(int paymentId)
         {

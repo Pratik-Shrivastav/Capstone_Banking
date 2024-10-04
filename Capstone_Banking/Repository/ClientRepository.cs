@@ -45,8 +45,18 @@ namespace Capstone_Banking.Repository
             return beneficiary;
         }
 
-        // Get All Employees
-        public async Task<(IEnumerable<Employee> employees, int totalCount)> GetEmployeesAsync(int userId, int page, int pageSize)
+        public async Task<ICollection<Employee>> GetAllEmployeesAsync(int userId)
+        {
+            User user = await _bankingDbContext.UserTable
+                            .Include(x => x.ClientObject)
+                            .ThenInclude(y => y.EmployeeList)
+                            .ThenInclude(z => z.AccountDetailsObject)
+                            .FirstOrDefaultAsync(y => y.Id == userId);
+
+            return user.ClientObject.EmployeeList;
+        }
+        // Get All Employees Paged
+        public async Task<(IEnumerable<Employee> employees, int totalCount)> GetEmployeesPagedAsync(int userId, int page, int pageSize)
         {
             User user = await _bankingDbContext.UserTable
                 .Include(x => x.ClientObject)
@@ -73,6 +83,15 @@ namespace Capstone_Banking.Repository
 
             return (paginatedEmployees, totalCount);
         }
+        public async Task<ICollection<Employee>> SearchEmployeesAsync(int userId, string searchTerm)
+        {
+            // Fetch the client associated with the user
+            var employees = await _bankingDbContext.EmployeeTable
+                .Include(x => x.AccountDetailsObject).Where(s=>s.Name.StartsWith(searchTerm)).ToListAsync();
+                
+            return employees;
+        }
+
 
 
         // Get All Beneficiaries
@@ -83,6 +102,40 @@ namespace Capstone_Banking.Repository
                 .ThenInclude(z => z.AccountDetailsObject)
                 .FirstOrDefaultAsync(y => y.Id == userId);
             return user.ClientObject.BeneficiaryList;
+        }
+
+        // Get All Beneficiaries Paged
+        public async Task<(IEnumerable<Beneficiary> beneficiaries, int totalCount)> GetBeneficiaryPagedAsync(int userId, int page, int pageSize)
+        {
+            User user = await _bankingDbContext.UserTable
+                .Include(x => x.ClientObject)
+                .ThenInclude(y => y.BeneficiaryList)
+                .ThenInclude(z => z.AccountDetailsObject)
+                .FirstOrDefaultAsync(y => y.Id == userId);
+
+            // Check if user or their ClientObject is null
+            
+
+            // Get the total count of employees
+            var totalCount = (user.ClientObject.BeneficiaryList.Where(c => c.IsActive).ToList()).Count;
+            Console.WriteLine(totalCount);
+            // Apply pagination
+            var paginatedBeneficiaries = user.ClientObject.BeneficiaryList
+                .Where(c => c.IsActive)
+                .Skip((page - 1) * pageSize) // Skip previous pages
+                .Take(pageSize)              // Take the number of employees for the current page
+                .ToList();
+
+
+            return (paginatedBeneficiaries, totalCount);
+        }
+        public async Task<ICollection<Beneficiary>> SearchBeneficiaryAsync(int userId, string searchTerm)
+        {
+            // Fetch the client associated with the user
+            var beneficiaries = await _bankingDbContext.BeneficiaryTable
+                .Include(x => x.AccountDetailsObject).Where(s => s.BenificiaryName.StartsWith(searchTerm)).ToListAsync();
+
+            return beneficiaries;
         }
 
         // Get Employee by ID

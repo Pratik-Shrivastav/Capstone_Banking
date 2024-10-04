@@ -70,7 +70,7 @@ namespace Capstone_Banking.Controller
 
         // GET: api/Client/Employees
         [HttpGet("Employees")]
-        public async Task<IActionResult> GetEmployees(int page = 1, int pageSize = 5) // Add page and pageSize parameters
+        public async Task<IActionResult> GetEmployeesAsync() // Add page and pageSize parameters
         {
             string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
 
@@ -80,9 +80,38 @@ namespace Capstone_Banking.Controller
             }
 
             // Get paginated employees
-            var (employees, totalCount) = await _clientService.GetEmployeesAsync(int.Parse(userId), page, pageSize);
+            var employee =  await _clientService.GetAllEmployeesAsync(int.Parse(userId));
+            return Ok(employee);
+
+        }
+        [HttpGet("EmployeesPaged")]
+        public async Task<IActionResult> GetEmployeesPaged(int page = 1, int pageSize = 5) // Add page and pageSize parameters
+        {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            // Get paginated employees
+            var (employees, totalCount) = await _clientService.GetEmployeesPagedAsync(int.Parse(userId), page, pageSize);
 
             return Ok(new { employees, totalCount });
+        }
+        [HttpGet("SearchEmployees")]
+        public async Task<IActionResult> SearchEmployees(string searchTerm)
+        {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            // Get filtered employees
+            var employees = await _clientService.SearchEmployeesAsync(int.Parse(userId), searchTerm);
+            return Ok(employees);
         }
 
 
@@ -108,7 +137,39 @@ namespace Capstone_Banking.Controller
             var beneficiaries = await _clientService.GetBeneficiariesAsync(int.Parse(userId));
             return Ok(beneficiaries);
         }
+        //GEt beneficiaries paged
+        [HttpGet("BeneficiaryPaged")]
+        public async Task<IActionResult> GetBeneficiariesPaged(int page = 1, int pageSize = 5) // Add page and pageSize parameters
+        {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
 
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            // Get paginated beneficiary
+            var (beneficiaries, totalCount) = await _clientService.GetBeneficiaryPagedAsync(int.Parse(userId), page, pageSize);
+
+            return Ok(new { beneficiaries, totalCount });
+        }
+
+
+        //Get BeneficiarySearch
+        [HttpGet("SearchBeneficiary")]
+        public async Task<IActionResult> SearchBeneficiary(string searchTerm)
+        {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            // Get filtered employees
+            var beneficiary = await _clientService.SearchBeneficiaryAsync(int.Parse(userId), searchTerm);
+            return Ok(beneficiary);
+        }
         // GET: api/Client/Beneficiary/{id}
         [HttpGet("Beneficiary/{id}")]
         public async Task<IActionResult> GetBeneficiaryById(int id)
