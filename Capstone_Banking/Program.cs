@@ -1,6 +1,7 @@
 using System.Text;
 using Capstone_Banking.CommonFunction;
 using Capstone_Banking.Data;
+using Capstone_Banking.Model;
 using Capstone_Banking.Repository;
 using Capstone_Banking.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -23,7 +24,7 @@ builder.Services.AddScoped<ISuperAdminRepository, SuperAdminRepository>();
 builder.Services.AddScoped<ISuperAdminService, SuperAdminServie>();
 builder.Services.AddScoped<IBankRepository, BankRepository>();
 builder.Services.AddScoped<IBankService, BankService>();
-
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 
 builder.Services.AddScoped<UploadHandler>();
 

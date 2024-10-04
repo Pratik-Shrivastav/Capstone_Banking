@@ -15,9 +15,12 @@ namespace Capstone_Banking.Controller
     public class BankController : ControllerBase
     {
         private IBankService _bankService;
-        public BankController(IBankService bankService) 
+        private UploadHandler _uploadHandler;
+
+        public BankController(IBankService bankService, UploadHandler uploadHandler)
         {
             _bankService = bankService;
+            _uploadHandler = uploadHandler;
         }
         [HttpPost]
         public async Task Register([FromBody] User user)
@@ -49,7 +52,7 @@ namespace Capstone_Banking.Controller
         {
 
             BankingDbContext bankingDbContext = new BankingDbContext();
-            var fileResult = await (new UploadHandler(bankingDbContext)).DownloadFile(fileName);
+            var fileResult = await _uploadHandler.DownloadFile(fileName);
             if (fileResult == null)
             {
                 return NotFound("File not found");

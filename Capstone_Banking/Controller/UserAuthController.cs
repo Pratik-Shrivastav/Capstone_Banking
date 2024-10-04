@@ -53,8 +53,11 @@ namespace Capstone_Banking.Controller
            
             if (fileList != null)
             {
+
                 //_uploadHandler.Upload(int.Parse(id), fileList);
-                return await (new UploadHandler(bankingDbContext).Upload(int.Parse(userId),fileList));
+                //return await (new UploadHandler(bankingDbContext).Upload(int.Parse(userId),fileList));
+                return await _uploadHandler.Upload(int.Parse(userId), fileList);
+
             }
             return "Empty";
         }

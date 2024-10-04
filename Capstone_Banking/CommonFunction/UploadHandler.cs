@@ -1,17 +1,27 @@
 ﻿    using Capstone_Banking.Data;
     using Capstone_Banking.Model;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
     namespace Capstone_Banking.CommonFunction
     {
         public class UploadHandler
         {
             private BankingDbContext _dbContext;
-            public UploadHandler(BankingDbContext dbContext)
+            private Cloudinary _cloudinary;
+        public UploadHandler(BankingDbContext dbContext, IOptions<CloudinarySettings> config)
             {
-                _dbContext = dbContext;
-            }
+            var acc = new Account(
+                config.Value.CloudName,
+                config.Value.ApiKey,
+                config.Value.ApiSecret
+                );
+            _dbContext = dbContext;
+            _cloudinary = new Cloudinary(acc);
+        }
         public async Task<string> Upload(int id, ICollection<IFormFile> fileList)
         {
             // Fetch the user from the database
@@ -39,6 +49,22 @@ using Microsoft.EntityFrameworkCore;
                 Console.WriteLine("Document Empty");
 
                 user.ClientObject.DocumentList = new List<Documents>();  // Initialize DocumentList if it's null
+            }
+            foreach (var file in fileList) 
+            {
+                var uploadResult = new ImageUploadResult();
+
+                if (file.Length > 0)
+
+                {
+                    using var stream = file.OpenReadStream();
+                    var uploadParams = new ImageUploadParams()
+                    {
+                        File = new FileDescription(file.FileName, stream),
+                        Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face")
+                    };
+                    uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                }
             }
 
             // Iterate over the files and validate/upload
@@ -87,7 +113,6 @@ using Microsoft.EntityFrameworkCore;
                 user.ClientObject.DocumentList.Add(fileDetails);
                 await _dbContext.SaveChangesAsync();
             }
-
             return "File(s) Uploaded Successfully";
         }
 

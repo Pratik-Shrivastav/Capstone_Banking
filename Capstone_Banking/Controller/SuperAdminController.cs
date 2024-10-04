@@ -17,10 +17,13 @@ namespace Capstone_Banking.Controller
     {
         private ISuperAdminService _superAdminService;
         private BankingDbContext _bankingDbContext;
-        public SuperAdminController(ISuperAdminService superAdminService, BankingDbContext bankingDbContext)
+        private UploadHandler _uploadHandler;
+
+        public SuperAdminController(ISuperAdminService superAdminService, BankingDbContext bankingDbContext, UploadHandler uploadHandler)
         {
             _superAdminService = superAdminService;
             _bankingDbContext = bankingDbContext;
+            _uploadHandler = uploadHandler;
         }
 
         // GET: api/<SuperAdminController>
@@ -67,7 +70,7 @@ namespace Capstone_Banking.Controller
         {
             
             BankingDbContext bankingDbContext = new BankingDbContext();
-            var fileResult = await (new UploadHandler(bankingDbContext)).DownloadFile(fileName);
+            var fileResult = await _uploadHandler.DownloadFile(fileName);
             if (fileResult == null)
             {
                 return NotFound("File not found");
