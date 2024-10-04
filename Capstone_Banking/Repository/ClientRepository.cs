@@ -61,14 +61,15 @@ namespace Capstone_Banking.Repository
             }
 
             // Get the total count of employees
-            var totalCount = user.ClientObject.EmployeeList.Count;
+            var totalCount = (user.ClientObject.EmployeeList.Where(c=>c.IsActive).ToList()).Count;
 
             // Apply pagination
             var paginatedEmployees = user.ClientObject.EmployeeList
-                // Order by EmployeeId or other suitable fields
+                .Where(c=>c.IsActive)
                 .Skip((page - 1) * pageSize) // Skip previous pages
                 .Take(pageSize)              // Take the number of employees for the current page
                 .ToList();
+
 
             return (paginatedEmployees, totalCount);
         }
