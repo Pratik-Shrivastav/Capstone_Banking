@@ -70,12 +70,21 @@ namespace Capstone_Banking.Controller
 
         // GET: api/Client/Employees
         [HttpGet("Employees")]
-        public async Task<IActionResult> GetEmployees()
+        public async Task<IActionResult> GetEmployees(int page = 1, int pageSize = 5) // Add page and pageSize parameters
         {
             string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            var employees = await _clientService.GetEmployeesAsync(int.Parse(userId));
-            return Ok(employees);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            // Get paginated employees
+            var (employees, totalCount) = await _clientService.GetEmployeesAsync(int.Parse(userId), page, pageSize);
+
+            return Ok(new { employees, totalCount });
         }
+
 
         // GET: api/Client/Employee/{id}
         [HttpGet("Employee/{id}")]

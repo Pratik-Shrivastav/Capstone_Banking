@@ -7,7 +7,7 @@ namespace Capstone_Banking.Repository
     public interface IClientRepository
     {
         Task<Employee> AddEmployeeAsync(Employee employee,int userId);
-        Task<IEnumerable<Employee>> GetEmployeesAsync(int userId);
+        public Task<(IEnumerable<Employee> employees, int totalCount)> GetEmployeesAsync(int userId, int page, int pageSize);
         Task<Employee> GetEmployeeByIdAsync(int id);
         Task<Employee> UpdateEmployeeAsync(Employee employee);
         Task DeleteEmployeeAsync(int id);

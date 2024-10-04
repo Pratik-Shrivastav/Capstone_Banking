@@ -46,14 +46,33 @@ namespace Capstone_Banking.Repository
         }
 
         // Get All Employees
-        public async Task<IEnumerable<Employee>> GetEmployeesAsync(int userId)
+        public async Task<(IEnumerable<Employee> employees, int totalCount)> GetEmployeesAsync(int userId, int page, int pageSize)
         {
-            User user = await _bankingDbContext.UserTable.Include(x => x.ClientObject)
+            User user = await _bankingDbContext.UserTable
+                .Include(x => x.ClientObject)
                 .ThenInclude(y => y.EmployeeList)
                 .ThenInclude(z => z.AccountDetailsObject)
                 .FirstOrDefaultAsync(y => y.Id == userId);
-            return user.ClientObject.EmployeeList;
+
+            // Check if user or their ClientObject is null
+            if (user?.ClientObject?.EmployeeList == null)
+            {
+                return (Enumerable.Empty<Employee>(), 0); // Return empty if no employees found
+            }
+
+            // Get the total count of employees
+            var totalCount = user.ClientObject.EmployeeList.Count;
+
+            // Apply pagination
+            var paginatedEmployees = user.ClientObject.EmployeeList
+                // Order by EmployeeId or other suitable fields
+                .Skip((page - 1) * pageSize) // Skip previous pages
+                .Take(pageSize)              // Take the number of employees for the current page
+                .ToList();
+
+            return (paginatedEmployees, totalCount);
         }
+
 
         // Get All Beneficiaries
         public async Task<IEnumerable<Beneficiary>> GetBeneficiariesAsync(int userId)

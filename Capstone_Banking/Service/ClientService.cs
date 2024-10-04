@@ -21,10 +21,11 @@ namespace Capstone_Banking.Service
             return _clientRepository.AddEmployeeAsync(employee,userId);
         }
 
-        public Task<IEnumerable<Employee>> GetEmployeesAsync(int userId)
+        public Task<(IEnumerable<Employee> employees, int totalCount)> GetEmployeesAsync(int userId, int page, int pageSize)
         {
-            return _clientRepository.GetEmployeesAsync(userId);
+            return _clientRepository.GetEmployeesAsync(userId, page, pageSize);
         }
+
 
         public Task<Employee> GetEmployeeByIdAsync(int id)
         {
