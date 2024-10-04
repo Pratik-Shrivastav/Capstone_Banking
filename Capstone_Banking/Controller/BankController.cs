@@ -1,4 +1,5 @@
-﻿using Capstone_Banking.CommonFunction;
+﻿using System.Reflection.Metadata;
+using Capstone_Banking.CommonFunction;
 using Capstone_Banking.Data;
 using Capstone_Banking.Dto;
 using Capstone_Banking.Model;
@@ -50,17 +51,17 @@ namespace Capstone_Banking.Controller
         [HttpGet("Download/{fileName}")]
         public async Task<IActionResult> DownloadFile(string fileName)
         {
-
+            
             BankingDbContext bankingDbContext = new BankingDbContext();
-            var fileResult = await _uploadHandler.DownloadFile(fileName);
-            if (fileResult == null)
+            string fileResult = await _uploadHandler.DownloadFile(fileName);
+            if (fileResult.Length==0)
             {
                 return NotFound("File not found");
             }
             string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
             AddAuditLogs.AddLog(int.Parse(userId), "File Download", "File Downloaded");
 
-            return fileResult;
+            return Ok(new { documentUrl = fileResult }); ;
         }
 
         [HttpGet("SalaryDisbursement/{clientId}")]

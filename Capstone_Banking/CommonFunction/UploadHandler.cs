@@ -1,4 +1,4 @@
-﻿    using Capstone_Banking.Data;
+﻿using Capstone_Banking.Data;
     using Capstone_Banking.Model;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
@@ -53,26 +53,9 @@ using Microsoft.Extensions.Options;
             foreach (var file in fileList) 
             {
                 var uploadResult = new ImageUploadResult();
-
-                if (file.Length > 0)
-
-                {
-                    using var stream = file.OpenReadStream();
-                    var uploadParams = new ImageUploadParams()
-                    {
-                        File = new FileDescription(file.FileName, stream),
-                        Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face")
-                    };
-                    uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                }
-            }
-
-            // Iterate over the files and validate/upload
-            foreach (var file in fileList)
-            {
-                // Validate file extension
                 List<string> validExtensions = new List<string>() { ".jpeg", ".jpg", ".png", ".gif" };
                 string extension = Path.GetExtension(file.FileName);
+                string path = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
 
                 if (!validExtensions.Contains(extension))
                 {
@@ -88,63 +71,85 @@ using Microsoft.Extensions.Options;
 
                 // Generate a unique file name and save the file
                 string fileName = Guid.NewGuid().ToString() + extension;
-                string path = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
 
-                // Ensure the directory exists
-                if (!Directory.Exists(path))
+                if (file.Length > 0)
+
                 {
-                    Directory.CreateDirectory(path);
+                    using var stream = file.OpenReadStream();
+                    var uploadParams = new ImageUploadParams()
+                    {
+                        File = new FileDescription(file.FileName, stream),
+                        Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face")
+                    };
+                    uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                    var fileDetails = new Documents()
+                    {
+                        DocumentName = fileName,
+                        DocumentType = extension,
+                        DocumentUrl = uploadResult.Url.ToString(),
+                        UploadedOn = DateTime.Now,
+                    };
+
+                    user.ClientObject.DocumentList.Add(fileDetails);
+                    await _dbContext.SaveChangesAsync();
+
                 }
-
-                using (FileStream fileStream = new FileStream(Path.Combine(path, fileName), FileMode.Create))
-                {
-                    await file.CopyToAsync(fileStream);
-                }
-
-                // Add file details to DocumentList
-                var fileDetails = new Documents()
-                {
-                    DocumentName = fileName,
-                    DocumentType = extension,
-                    DocumentUrl = Path.Combine(path, fileName),
-                    UploadedOn = DateTime.Now,
-                };
-
-                user.ClientObject.DocumentList.Add(fileDetails);
-                await _dbContext.SaveChangesAsync();
             }
+
+            // Iterate over the files and validate/upload
+            //foreach (var file in fileList)
+            //{
+            //    // Validate file extension
+            //    List<string> validExtensions = new List<string>() { ".jpeg", ".jpg", ".png", ".gif" };
+            //    string extension = Path.GetExtension(file.FileName);
+
+            //    if (!validExtensions.Contains(extension))
+            //    {
+            //        return "Extension is not valid";
+            //    }
+
+            //    // Validate file size
+            //    long size = file.Length;
+            //    if (size > (5 * 1024 * 1024))
+            //    {
+            //        return "Max size can't exceed 5Mb";
+            //    }
+
+            //    // Generate a unique file name and save the file
+            //    string fileName = Guid.NewGuid().ToString() + extension;
+            //    string path = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+
+            //    // Ensure the directory exists
+            //    if (!Directory.Exists(path))
+            //    {
+            //        Directory.CreateDirectory(path);
+            //    }
+
+            //    using (FileStream fileStream = new FileStream(Path.Combine(path, fileName), FileMode.Create))
+            //    {
+            //        await file.CopyToAsync(fileStream);
+            //    }
+
+            //    // Add file details to DocumentList
+            //    var fileDetails = new Documents()
+            //    {
+            //        DocumentName = fileName,
+            //        DocumentType = extension,
+            //        DocumentUrl = Path.Combine(path, fileName),
+            //        UploadedOn = DateTime.Now,
+            //    };
+
+            //    user.ClientObject.DocumentList.Add(fileDetails);
+            //    await _dbContext.SaveChangesAsync();
+            //}
             return "File(s) Uploaded Successfully";
         }
 
-        public async Task<FileResult> DownloadFile(string fileName)
+        public async Task<string> DownloadFile(string fileName)
         {
+            Documents documents = _dbContext.DocumentsTable.FirstOrDefault(c=>c.DocumentName == fileName);
             // Specify the path where files are stored
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", fileName);
-
-            // Check if the file exists
-            if (!System.IO.File.Exists(path))
-            {
-                return null; // or handle it as needed (e.g., return a NotFound result)
-            }
-
-            // Read the file content
-            var fileContent = await System.IO.File.ReadAllBytesAsync(path);
-
-            // Get the file extension to determine the content type
-            string extension = Path.GetExtension(fileName);
-            string contentType = extension switch
-            {
-                ".jpg" => "image/jpeg",
-                ".jpeg" => "image/jpeg",
-                ".png" => "image/png",
-                ".gif" => "image/gif",
-                _ => "application/octet-stream" // default
-            };
-
-            return new FileContentResult(fileContent, contentType)
-            {
-                FileDownloadName = fileName // Set the file name for the download
-            };
+            return documents.DocumentUrl;
         }
 
     }
