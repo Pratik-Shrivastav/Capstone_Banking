@@ -32,13 +32,28 @@ namespace Capstone_Banking.Repository
                 .Include(e => e.BeneficiaryList).ThenInclude(x => x.PaymentsList).ThenInclude(e => e.Transactions)
                 .Include(a => a.SalaryDisbursementList)
                 .ThenInclude(p => p.TransactionList)
+                .Where(s=>s.Status=="Success")
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
         }
-        public async Task<int> GetClientCount()
+
+        public async Task<ICollection<Client>> GetAllClientsPagedPending(int page, int pageSize)
         {
-            var clients = await _db.ClientTable.CountAsync();
+            return await _db.ClientTable.Include(c => c.AccountDetailsObject)
+                .Include(d => d.EmployeeList).ThenInclude(y => y.AccountDetailsObject)
+                .Include(e => e.BeneficiaryList).ThenInclude(x => x.PaymentsList).ThenInclude(e => e.Transactions)
+                .Include(a => a.SalaryDisbursementList)
+                .ThenInclude(p => p.TransactionList)
+                .Where(s=>s.Status=="Pending")
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<int> GetClientCount(string status)
+        {
+            var clients = await _db.ClientTable.Where(s=>s.Status==status).CountAsync();
             return clients;
         }
 
@@ -51,7 +66,7 @@ namespace Capstone_Banking.Repository
                 .Include(a => a.SalaryDisbursementList).ThenInclude(p => p.TransactionList)
                 .FirstOrDefaultAsync(z => z.Id == id);
         }
-        public ICollection<Client> GetClientName(string companyName)
+        public ICollection<Client> GetClientName(string companyName, string status)
         {
 
             return  _db.ClientTable.Include(c => c.AccountDetailsObject)
@@ -59,7 +74,7 @@ namespace Capstone_Banking.Repository
                 .Include(t => t.BeneficiaryList).ThenInclude(q => q.AccountDetailsObject)
                 .Include(e => e.BeneficiaryList).ThenInclude(x => x.PaymentsList).ThenInclude(e => e.Transactions)
                 .Include(a => a.SalaryDisbursementList).ThenInclude(p => p.TransactionList)
-                .Where(n => n.CompanyName.StartsWith(companyName))
+                .Where(n => n.CompanyName.StartsWith(companyName)&&n.Status==status)
                 .ToList();
         }
 

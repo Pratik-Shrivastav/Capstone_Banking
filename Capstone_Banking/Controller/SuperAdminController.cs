@@ -33,10 +33,17 @@ namespace Capstone_Banking.Controller
             return Ok(_superAdminService.GetAllClients());
         }
         // GET: api/<SuperAdminController>
-        [HttpGet]
+        [HttpGet("SuccessClients")]
         public async Task<IActionResult> GetPaged(int page = 1, int pageSize = 8)
         {
             var (clients, totalCount) = await _superAdminService.GetAllClientsPaged(page, pageSize);
+            return Ok(new { clients, totalCount });
+        }
+
+        [HttpGet("PendingClients")]
+        public async Task<IActionResult> GetPagedPending(int page = 1, int pageSize = 8)
+        {
+            var (clients, totalCount) = await _superAdminService.GetAllClientsPagedPending(page, pageSize);
             return Ok(new { clients, totalCount });
         }
 
@@ -58,10 +65,10 @@ namespace Capstone_Banking.Controller
             return await _superAdminService.GetClientsById(clientId);
         }
 
-        [HttpGet("ClientByName/{companyName}")]
-        public async Task<ICollection<Client>> GetByName(string companyName)
+        [HttpGet("ClientByName/{companyName}/{status}")]
+        public async Task<ICollection<Client>> GetByName(string companyName,string status)
         {
-            return await _superAdminService.GetClientName(companyName);
+            return await _superAdminService.GetClientName(companyName,status);
 
         }
 
