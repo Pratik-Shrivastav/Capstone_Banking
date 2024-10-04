@@ -4,9 +4,13 @@ namespace Capstone_Banking.Repository
 {
     public interface ISuperAdminRepository
     {
-        public Task<ICollection<Client>> GetAllClients();
+        public Task<ICollection<Client>> GetAllClientsPaged(int page, int pageSize);
+        public ICollection<Client> GetAllClients();
+        public  Task<int> GetClientCount();
 
         public Task<Client> GetClientById(int id);
+        public ICollection<Client> GetClientName(string companyName);
+
 
         public Task<ICollection<Documents>> GetDocuments(int clientId);
 

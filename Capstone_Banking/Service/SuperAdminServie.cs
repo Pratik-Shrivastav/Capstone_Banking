@@ -12,14 +12,32 @@ namespace Capstone_Banking.Service
             _superAdminRepository = superAdminRepo;
         }
 
+        public async Task<(ICollection<Client>, int totalCount)> GetAllClientsPaged(int page, int pageSize)
+        {
+            var clients = await _superAdminRepository.GetAllClientsPaged(page, pageSize);
+            int totalClients = await _superAdminRepository.GetClientCount();
+            return (clients,totalClients );
+        }
+
         public async Task<ICollection<Client>> GetAllClients()
         {
-            return await _superAdminRepository.GetAllClients();
+            return _superAdminRepository.GetAllClients();
         }
+
 
         public async Task<Client> GetClientsById(int id)
         {
            return await _superAdminRepository.GetClientById(id);
+        }
+
+        public async Task<ICollection<Client>> GetClientName(string companyName)
+        {
+            var clients = _superAdminRepository.GetClientName(companyName);
+            if (clients.Count() == 0) 
+            {
+                return null;
+            }
+            return clients;
         }
 
         public Task<ICollection<Documents>> GetDocumentById(int clientId)

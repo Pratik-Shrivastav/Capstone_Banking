@@ -15,13 +15,31 @@ namespace Capstone_Banking.Repository
             _db = bankingDbContext;
         }
 
-        public async Task<ICollection<Client>> GetAllClients()
+        public ICollection<Client> GetAllClients()
+        {
+            var clients=  _db.ClientTable.Include(c => c.AccountDetailsObject)
+                .Include(d => d.EmployeeList).ThenInclude(y => y.AccountDetailsObject)
+                .Include(e => e.BeneficiaryList).ThenInclude(x => x.PaymentsList).ThenInclude(e => e.Transactions)
+                .Include(a => a.SalaryDisbursementList)
+                .ThenInclude(p => p.TransactionList)
+                .ToList();
+            return clients;
+        }
+        public async Task<ICollection<Client>> GetAllClientsPaged(int page, int pageSize)
         {
             return await _db.ClientTable.Include(c => c.AccountDetailsObject)
                 .Include(d => d.EmployeeList).ThenInclude(y => y.AccountDetailsObject)
                 .Include(e => e.BeneficiaryList).ThenInclude(x => x.PaymentsList).ThenInclude(e => e.Transactions)
                 .Include(a => a.SalaryDisbursementList)
-                .ThenInclude(p => p.TransactionList).ToListAsync();
+                .ThenInclude(p => p.TransactionList)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+        public async Task<int> GetClientCount()
+        {
+            var clients = await _db.ClientTable.CountAsync();
+            return clients;
         }
 
         public async Task<Client> GetClientById(int id)
@@ -32,6 +50,17 @@ namespace Capstone_Banking.Repository
                 .Include(e => e.BeneficiaryList).ThenInclude(x => x.PaymentsList).ThenInclude(e => e.Transactions)
                 .Include(a => a.SalaryDisbursementList).ThenInclude(p => p.TransactionList)
                 .FirstOrDefaultAsync(z => z.Id == id);
+        }
+        public ICollection<Client> GetClientName(string companyName)
+        {
+
+            return  _db.ClientTable.Include(c => c.AccountDetailsObject)
+                .Include(d => d.EmployeeList).ThenInclude(y => y.AccountDetailsObject)
+                .Include(t => t.BeneficiaryList).ThenInclude(q => q.AccountDetailsObject)
+                .Include(e => e.BeneficiaryList).ThenInclude(x => x.PaymentsList).ThenInclude(e => e.Transactions)
+                .Include(a => a.SalaryDisbursementList).ThenInclude(p => p.TransactionList)
+                .Where(n => n.CompanyName.StartsWith(companyName))
+                .ToList();
         }
 
         public async Task<ICollection<Documents>> GetDocuments(int clientId)

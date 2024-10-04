@@ -4,6 +4,7 @@ using Capstone_Banking.Dto;
 using Capstone_Banking.Model;
 using Capstone_Banking.Service;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -26,11 +27,17 @@ namespace Capstone_Banking.Controller
             _uploadHandler = uploadHandler;
         }
 
+        [HttpGet("AllClients")]
+        public async Task<IActionResult> Get()
+        {
+            return Ok(_superAdminService.GetAllClients());
+        }
         // GET: api/<SuperAdminController>
         [HttpGet]
-        public Task<ICollection<Client>> Get()
+        public async Task<IActionResult> GetPaged(int page = 1, int pageSize = 8)
         {
-            return _superAdminService.GetAllClients();
+            var (clients, totalCount) = await _superAdminService.GetAllClientsPaged(page, pageSize);
+            return Ok(new { clients, totalCount });
         }
 
         [HttpPost]
@@ -49,6 +56,13 @@ namespace Capstone_Banking.Controller
         {
             
             return await _superAdminService.GetClientsById(clientId);
+        }
+
+        [HttpGet("ClientByName/{companyName}")]
+        public async Task<ICollection<Client>> GetByName(string companyName)
+        {
+            return await _superAdminService.GetClientName(companyName);
+
         }
 
         [HttpGet("Document/{id}")]
