@@ -91,7 +91,15 @@ namespace Capstone_Banking.Service
                         loginResponse.Message = "Login Successful";
                         loginResponse.Success = true;
                         loginResponse.Token = GenerateToken.GetToken(user, _configuration);
-
+                        if (loginResponse.Role == "Client")
+                        {
+                            loginResponse.UserName = user.ClientObject.CompanyName;
+                        }
+                        else
+                        {
+                            loginResponse.UserName = "";
+                        }
+                        
                         if (user.ClientObject == null) 
                         {
                             loginResponse.Status = "Success";

@@ -33,7 +33,7 @@ namespace Capstone_Banking.Service
 
         //Salary Disbursement Methods
         public Task<SalaryDisbursement> DisburseSalariesAsync(SalaryDisbursement salaryDisbursement, int userId, List<int> employeeIds);
-        public Task<List<SalaryDisbursementResponseDto>> GetPaginatedSalaryDisbursementsAsync(int userId, int pageNumber, int pageSize);
+        Task<(List<SalaryDisbursementResponseDto>, int totalCount)> GetPaginatedSalaryDisbursementsAsync(int userId, int pageNumber, int pageSize);
 
         Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync(int userId);
 

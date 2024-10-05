@@ -27,7 +27,7 @@ namespace Capstone_Banking.Repository
         Task DeleteBeneficiaryAsync(int id);
 
         Task<SalaryDisbursement> DisburseSalariesAsync(SalaryDisbursement salaryDisbursement, int userId, List<int> employeeIds);
-        public Task<List<SalaryDisbursementResponseDto>> GetPaginatedSalaryDisbursementsAsync(int userId, int pageNumber, int pageSize);
+        public Task<(List<SalaryDisbursementResponseDto>, int totalCount)> GetPaginatedSalaryDisbursementsAsync(int userId, int pageNumber, int pageSize);
 
         Task<Payment> CreatePaymentAsync(Payment payment, int beneficiaryId, int userId);
         public  Task<ICollection<Beneficiary>> GetPaginatedRecentPaymentsWithBeneficiaryAsync(int clientId, int pageNumber, int pageSize);

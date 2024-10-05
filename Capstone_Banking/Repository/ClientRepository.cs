@@ -383,7 +383,7 @@ namespace Capstone_Banking.Repository
             }
             return salaryDisbursementResponseDtos;
         }
-        public async Task<List<SalaryDisbursementResponseDto>> GetPaginatedSalaryDisbursementsAsync(int userId, int pageNumber, int pageSize)
+        public async Task<(List<SalaryDisbursementResponseDto>,int totalCount)> GetPaginatedSalaryDisbursementsAsync(int userId, int pageNumber, int pageSize)
         {
             User user = await _bankingDbContext.UserTable
                 .Include(c => c.ClientObject)
@@ -394,10 +394,7 @@ namespace Capstone_Banking.Repository
                 .ThenInclude(t => t.TransactionList)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
-            if (user == null || user.ClientObject == null)
-            {
-                return new List<SalaryDisbursementResponseDto>(); // Return empty list if no records found
-            }
+            int count = user.ClientObject.SalaryDisbursementList.Count();   
 
             var salaryDisbursementList = user.ClientObject.SalaryDisbursementList
                 .Skip((pageNumber - 1) * pageSize)
@@ -426,15 +423,15 @@ namespace Capstone_Banking.Repository
 
                 salaryDisbursementResponseDtos.Add(responseDto);
             }
-            return salaryDisbursementResponseDtos;
+            return (salaryDisbursementResponseDtos,count);
         }
 
         public async Task<ICollection<AuditLog>> GetAuditLogs(int userId)
 
         {
             // Fetch audit logs that are related to the specific user
-            User user = await _bankingDbContext.UserTable.Include(a=>a.AuditLogList).FirstOrDefaultAsync(p=>p.Id == userId);
-            return user.AuditLogList;   
+            User user = await _bankingDbContext.UserTable.Include(a => a.AuditLogList).FirstOrDefaultAsync(p => p.Id == userId);
+            return user.AuditLogList.OrderByDescending(c => c.Timestamp).Take(20).ToList();  
         }
 
 

@@ -399,8 +399,8 @@ namespace Capstone_Banking.Controller
         {
             string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
 
-            var disbursements = await _clientService.GetPaginatedSalaryDisbursementsAsync(int.Parse(userId), pageNumber, pageSize);
-            return Ok(disbursements);
+            var(disbursements,count) = await _clientService.GetPaginatedSalaryDisbursementsAsync(int.Parse(userId), pageNumber, pageSize);
+            return Ok(new { disbursements, count });
         }
 
         [HttpGet("auditlogs")]
