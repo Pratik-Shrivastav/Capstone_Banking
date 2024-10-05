@@ -70,6 +70,21 @@ namespace Capstone_Banking.Service
             _superAdminRepository.UpdateSalaryDisbursementStatus(clientId,salaryDisId, status);
         }
 
+        public Object BeneficiartyOption(int clientId, int page, int pageSize)
+        {
+            var (paginatedBenificiary, count)=   _superAdminRepository.BeneficiartyOption(clientId, page, pageSize);
+            return new {paginatedBenificiary,count};
+
+        }
+
+        public Object PaymentsOfBeneficiary(int beneficiaryId, int page, int pageSize)
+        {
+            var (paginatedPayments, count) =  _superAdminRepository.PaymentsOfBeneficiary(beneficiaryId,page,pageSize);
+            return new {paginatedPayments, count};
+        }
+
+
+
 
 
     }

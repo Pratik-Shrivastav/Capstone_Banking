@@ -130,6 +130,21 @@ namespace Capstone_Banking.Controller
             AddAuditLogs.AddLog(int.Parse(userId), "Salary Disbursement Status", $"ClientId: {clientId} SalaryId-{salaryDisId} {value}");
         }
 
+        [HttpGet("GetBefiniciaryOption/{clientId}")]
+        public IActionResult BeneficiartyOption(int clientId,int page, int pageSize)
+        {
+            return Ok(_superAdminService.BeneficiartyOption(clientId, page, pageSize));
+        }
+
+        [HttpGet("GetPaymentByBenEficiaryId/{beneficiaryId}")]
+        public IActionResult PaymentsOfBeneficiary(int beneficiaryId, int page, int pageSize)
+        {
+            return Ok(_superAdminService.PaymentsOfBeneficiary(beneficiaryId, page, pageSize));
+
+        }
+
+
+
 
     }
 }

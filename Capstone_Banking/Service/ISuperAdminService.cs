@@ -23,6 +23,12 @@ namespace Capstone_Banking.Service
 
         public Task UpdateSalaryDisbursementStatus(int clientId,int salaryDisId, string status);
 
+        public Object BeneficiartyOption(int clientId, int page, int pageSize);
+
+        public Object PaymentsOfBeneficiary(int beneficiaryId, int page, int pageSize);
+
+
+
 
 
     }

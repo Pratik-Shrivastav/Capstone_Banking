@@ -62,10 +62,8 @@ namespace Capstone_Banking.Repository
         public async Task<Client> GetClientById(int id)
         {
             return await _db.ClientTable.Include(c => c.AccountDetailsObject)
-                .Include(d => d.EmployeeList).ThenInclude(y => y.AccountDetailsObject)
                 .Include(t => t.BeneficiaryList).ThenInclude(q => q.AccountDetailsObject)
                 .Include(e => e.BeneficiaryList).ThenInclude(x => x.PaymentsList).ThenInclude(e => e.Transactions)
-                .Include(a => a.SalaryDisbursementList).ThenInclude(p => p.TransactionList)
                 .FirstOrDefaultAsync(z => z.Id == id);
         }
         public (ICollection<User>, int count) GetClientName(string companyName, string status, int page, int pageSize)
@@ -229,6 +227,35 @@ namespace Capstone_Banking.Repository
             _db.SaveChanges();
 
         }
+
+        public (ICollection<Beneficiary>, int count) BeneficiartyOption(int clientId, int page, int pageSize)
+        {
+            Client client =  _db.ClientTable.Include(c => c.BeneficiaryList)
+                            .ThenInclude(ac => ac.AccountDetailsObject)
+                            .FirstOrDefault(f=>f.Id==clientId);
+                                        
+            int count =  client.BeneficiaryList.Count();
+            var paginatedBenificiary =  client.BeneficiaryList.OrderBy(s=>s.BenificiaryName).
+                Skip((page-1) * pageSize).Take(pageSize).ToList();
+
+            return (paginatedBenificiary, count);
+
+        }
+
+        public (ICollection<Payment>, int count) PaymentsOfBeneficiary(int beneficiaryId, int page, int pageSize)
+        {
+            Beneficiary beneficiary =  _db.BeneficiaryTable.Include(ac => ac.PaymentsList).ThenInclude(c=>c.Transactions)
+                            .FirstOrDefault(f => f.Id == beneficiaryId);
+
+            int count = beneficiary.PaymentsList.Count();
+            var paginatedPayments = beneficiary.PaymentsList.OrderBy(s => s.Status).
+                Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            return (paginatedPayments, count);
+
+        }
+
+
 
     }
 }

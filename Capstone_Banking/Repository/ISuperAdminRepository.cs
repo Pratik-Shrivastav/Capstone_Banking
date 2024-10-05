@@ -25,6 +25,12 @@ namespace Capstone_Banking.Repository
 
         public void UpdateSalaryDisbursementStatus(int clientId,int salaryDisId, string status);
 
+        public (ICollection<Beneficiary>, int count) BeneficiartyOption(int clientId, int page, int pageSize);
+
+        public  (ICollection<Payment>, int count) PaymentsOfBeneficiary(int beneficiaryId, int page, int pageSize);
+
+
+
 
 
     }
