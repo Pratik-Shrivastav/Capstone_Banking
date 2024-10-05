@@ -12,14 +12,14 @@ namespace Capstone_Banking.Service
         public Task<ICollection<Client>> GetAllClients();
 
         public Task<Client> GetClientsById(int id);
-        public Task<ICollection<User>> GetClientName(string companyName, string status);
+        public Task<(ICollection<User>, int count)> GetClientName(string companyName, string status, int page, int pageSize);
         public Task<ICollection<Documents>> GetDocumentById(int Clientd);
 
         public void UpdateClientStatus(int clientId, string status);
 
         public Task UpdatePaymentStatus(int clientId,int beneficiaryId,int payementId, string status);
 
-        public Task<ICollection<SalaryDisbursementResponseDto>> GetSalaryDisbursementClient(int clientId);
+        public Task<Object> GetSalaryDisbursementClient(int clientId, int page, int pageSize);
 
         public Task UpdateSalaryDisbursementStatus(int clientId,int salaryDisId, string status);
 

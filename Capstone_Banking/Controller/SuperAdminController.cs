@@ -66,10 +66,10 @@ namespace Capstone_Banking.Controller
         }
 
         [HttpGet("ClientByName/{companyName}/{status}")]
-        public async Task<ICollection<User>> GetByName(string companyName,string status)
+        public async Task<IActionResult> GetByName(string companyName,string status, int page = 1, int pageSize = 5)
         {
-            return await _superAdminService.GetClientName(companyName,status);
-
+            var (paginatedUser, count)=  await _superAdminService.GetClientName(companyName, status, page,pageSize);
+            return Ok(new { paginatedUser, count });
         }
 
         [HttpGet("Document/{id}")]
@@ -80,10 +80,10 @@ namespace Capstone_Banking.Controller
         }
 
         [HttpGet("SalaryDisbursement/{clientId}")]
-        public async Task<ICollection<SalaryDisbursementResponseDto>> GetSalaryDisbursementClient(int clientId)
+        public async Task<IActionResult> GetSalaryDisbursementClient(int page, int pageSize, int clientId)
         {
-
-            return await _superAdminService.GetSalaryDisbursementClient(clientId);
+            Console.WriteLine(page);
+            return Ok(await _superAdminService.GetSalaryDisbursementClient(clientId, page, pageSize));
         }
 
         [HttpGet("Download/{fileName}")]
@@ -129,5 +129,7 @@ namespace Capstone_Banking.Controller
             string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
             AddAuditLogs.AddLog(int.Parse(userId), "Salary Disbursement Status", $"ClientId: {clientId} SalaryId-{salaryDisId} {value}");
         }
+
+
     }
 }

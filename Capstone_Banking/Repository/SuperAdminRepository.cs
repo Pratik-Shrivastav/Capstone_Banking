@@ -68,16 +68,20 @@ namespace Capstone_Banking.Repository
                 .Include(a => a.SalaryDisbursementList).ThenInclude(p => p.TransactionList)
                 .FirstOrDefaultAsync(z => z.Id == id);
         }
-        public ICollection<User> GetClientName(string companyName, string status)
+        public (ICollection<User>, int count) GetClientName(string companyName, string status, int page, int pageSize)
         {
 
-            return  _db.UserTable.Include(cd=>cd.ClientObject).ThenInclude(c => c.AccountDetailsObject)
+           ICollection<User> users= _db.UserTable.Include(cd=>cd.ClientObject).ThenInclude(c => c.AccountDetailsObject)
                 .Include(cd => cd.ClientObject).ThenInclude(d => d.EmployeeList).ThenInclude(y => y.AccountDetailsObject)
                 .Include(cd => cd.ClientObject).ThenInclude(t => t.BeneficiaryList).ThenInclude(q => q.AccountDetailsObject)
                 .Include(cd => cd.ClientObject).ThenInclude(e => e.BeneficiaryList).ThenInclude(x => x.PaymentsList).ThenInclude(e => e.Transactions)
                .Include(cd => cd.ClientObject).ThenInclude(a => a.SalaryDisbursementList).ThenInclude(p => p.TransactionList)
                 .Where(cd => cd.ClientObject.CompanyName.StartsWith(companyName)&& cd.ClientObject.Status==status)
                 .ToList();
+
+            var count = users.Count();
+            var paginatedUser = users.Skip((page-1)*pageSize).Take(pageSize).ToList();
+            return (paginatedUser, count);
         }
 
         public async Task<ICollection<Documents>> GetDocuments(int clientId)
@@ -86,8 +90,9 @@ namespace Capstone_Banking.Repository
             return client.DocumentList;
         }
 
-        public async Task<ICollection<SalaryDisbursementResponseDto>> GetSalaryDisbursementClient(int clientId)
+        public async Task<(ICollection<SalaryDisbursementResponseDto>, int count)> GetSalaryDisbursementClient(int clientId, int page, int pageSize)
         {
+            
             Client client = await _db.ClientTable
                 .Include(c => c.SalaryDisbursementList).ThenInclude(x => x.SalaryForList)
                 .Include(c => c.SalaryDisbursementList).ThenInclude(x => x.TransactionList)
@@ -111,7 +116,9 @@ namespace Capstone_Banking.Repository
                 salaryDisbursementResponseDtoList.Add(responseDto);
 
             }
-            return salaryDisbursementResponseDtoList;
+            var count = salaryDisbursementResponseDtoList.Count();
+            var paginatedSalary = salaryDisbursementResponseDtoList.OrderBy(s => s.Status).Skip((page-1)*pageSize).Take(pageSize).ToList();
+            return (paginatedSalary,count);
         }
 
 

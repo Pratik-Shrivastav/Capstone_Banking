@@ -37,14 +37,11 @@ namespace Capstone_Banking.Service
            return await _superAdminRepository.GetClientById(id);
         }
 
-        public async Task<ICollection<User>> GetClientName(string companyName, string status)
+        public async Task<(ICollection<User>, int count)> GetClientName(string companyName, string status, int page, int pageSize)
         {
-            var clients = _superAdminRepository.GetClientName(companyName,status);
-            if (clients.Count() == 0) 
-            {
-                return null;
-            }
-            return clients;
+            var (paginatedUser, count) =  _superAdminRepository.GetClientName(companyName,status,page,pageSize);
+            
+            return (paginatedUser, count);
         }
 
         public Task<ICollection<Documents>> GetDocumentById(int clientId)
@@ -62,9 +59,10 @@ namespace Capstone_Banking.Service
             _superAdminRepository.UpdatePaymentStatus(clientId, beneficiaryId,payementId, status);
         }
 
-        public async Task<ICollection<SalaryDisbursementResponseDto>> GetSalaryDisbursementClient(int clientId)
+        public async Task<Object> GetSalaryDisbursementClient(int clientId, int page, int pageSize)
         {
-            return await _superAdminRepository.GetSalaryDisbursementClient(clientId);
+            var (paginatedSalary, count)= await _superAdminRepository.GetSalaryDisbursementClient(clientId, page, pageSize);
+            return new {paginatedSalary, count};
         }
 
         public async Task UpdateSalaryDisbursementStatus(int clientId,int salaryDisId, string status)
