@@ -111,6 +111,15 @@ namespace Capstone_Banking.Service
         {
             return await _clientRepository.GetRecentPaymentsWithBeneficiaryAsync(clientId);
         }
+        public async Task<List<SalaryDisbursementResponseDto>> GetPaginatedSalaryDisbursementsAsync(int userId, int pageNumber, int pageSize)
+        {
+            return await _clientRepository.GetPaginatedSalaryDisbursementsAsync(userId, pageNumber, pageSize);
+        }
+
+        public async Task<ICollection<Beneficiary>> GetPaginatedRecentPaymentsWithBeneficiaryAsync(int clientId, int pageNumber, int pageSize)
+        {
+            return await _clientRepository.GetPaginatedRecentPaymentsWithBeneficiaryAsync(clientId, pageNumber, pageSize);
+        }
 
         // New methods for salary disbursement retrieval
         public async Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync(int userId)

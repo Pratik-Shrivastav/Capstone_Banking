@@ -310,6 +310,26 @@ namespace Capstone_Banking.Repository
             return client.BeneficiaryList;
 
         }
+        public async Task<ICollection<Beneficiary>> GetPaginatedRecentPaymentsWithBeneficiaryAsync(int clientId, int pageNumber, int pageSize)
+        {
+            var client = _bankingDbContext.ClientTable
+                .Include(b => b.BeneficiaryList)
+                .ThenInclude(p => p.PaymentsList)
+                .ThenInclude(t => t.Transactions)
+                .FirstOrDefault(client => client.Id == clientId);
+
+            if (client == null || client.BeneficiaryList == null)
+            {
+                return new List<Beneficiary>(); // Return empty list if no records found
+            }
+
+            var paginatedBeneficiaryList = client.BeneficiaryList
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return paginatedBeneficiaryList;
+        }
 
         public async Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync(int userId)
         {
@@ -342,6 +362,51 @@ namespace Capstone_Banking.Repository
                    var employee =  _bankingDbContext.EmployeeTable.Find(salaryFor.EmployeeId);
                     responseDto.EmployeeList.Add(employee);
                 }   
+                salaryDisbursementResponseDtos.Add(responseDto);
+            }
+            return salaryDisbursementResponseDtos;
+        }
+        public async Task<List<SalaryDisbursementResponseDto>> GetPaginatedSalaryDisbursementsAsync(int userId, int pageNumber, int pageSize)
+        {
+            User user = await _bankingDbContext.UserTable
+                .Include(c => c.ClientObject)
+                .ThenInclude(s => s.SalaryDisbursementList)
+                .ThenInclude(st => st.SalaryForList)
+                .Include(c => c.ClientObject)
+                .ThenInclude(s => s.SalaryDisbursementList)
+                .ThenInclude(t => t.TransactionList)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null || user.ClientObject == null)
+            {
+                return new List<SalaryDisbursementResponseDto>(); // Return empty list if no records found
+            }
+
+            var salaryDisbursementList = user.ClientObject.SalaryDisbursementList
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            List<SalaryDisbursementResponseDto> salaryDisbursementResponseDtos = new List<SalaryDisbursementResponseDto>();
+
+            foreach (var salarydisbursement in salaryDisbursementList)
+            {
+                SalaryDisbursementResponseDto responseDto = new SalaryDisbursementResponseDto()
+                {
+                    Id = salarydisbursement.Id,
+                    Amount = salarydisbursement.Amount,
+                    ProcessedAt = salarydisbursement.ProcessedAt,
+                    Status = salarydisbursement.Status,
+                    TransactionList = salarydisbursement.TransactionList,
+                    EmployeeList = new List<Employee>()
+                };
+
+                foreach (var salaryFor in salarydisbursement.SalaryForList)
+                {
+                    var employee = _bankingDbContext.EmployeeTable.Find(salaryFor.EmployeeId);
+                    responseDto.EmployeeList.Add(employee);
+                }
+
                 salaryDisbursementResponseDtos.Add(responseDto);
             }
             return salaryDisbursementResponseDtos;

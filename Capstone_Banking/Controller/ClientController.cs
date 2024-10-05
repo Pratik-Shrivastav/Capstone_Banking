@@ -359,6 +359,17 @@ namespace Capstone_Banking.Controller
             return Ok(payments);
         }
 
+        //Get paginated recent payments
+        [HttpGet("recent-payments-paginated")]
+        public async Task<IActionResult> GetPaginatedRecentPayments([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
+            var payments = await _clientService.GetPaginatedRecentPaymentsWithBeneficiaryAsync(int.Parse(userId), pageNumber, pageSize);
+            return Ok(payments);
+        }
+
+
         // GET: api/Client/Payments/SalaryDisbursements
         [HttpGet("Payments/SalaryDisbursements")]
         public async Task<IActionResult> GetSalaryDisbursements()
@@ -367,6 +378,17 @@ namespace Capstone_Banking.Controller
             var salaryDisbursements = await _clientService.GetSalaryDisbursementsAsync(int.Parse(userId));
             return Ok(salaryDisbursements);
         }
+
+        //Get paginated salarydisbusrement
+        [HttpGet("salary-disbursements-paginated")]
+        public async Task<IActionResult> GetPaginatedSalaryDisbursements([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
+            var disbursements = await _clientService.GetPaginatedSalaryDisbursementsAsync(int.Parse(userId), pageNumber, pageSize);
+            return Ok(disbursements);
+        }
+
         [HttpGet("auditlogs")]
         public async Task<ActionResult<IEnumerable<AuditLog>>> GetAuditLogs()
         {
