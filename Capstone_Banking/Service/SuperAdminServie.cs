@@ -1,4 +1,5 @@
 ﻿using Capstone_Banking.Dto;
+using Capstone_Banking.Model;
 using Capstone_Banking.Repository;
 
 namespace Capstone_Banking.Service
@@ -18,7 +19,7 @@ namespace Capstone_Banking.Service
             int totalClients = await _superAdminRepository.GetClientCount("Success");
             return (clients,totalClients );
         }
-        public async Task<(ICollection<Client>, int totalCount)> GetAllClientsPagedPending(int page, int pageSize)
+        public async Task<(ICollection<User>, int totalCount)> GetAllClientsPagedPending(int page, int pageSize)
         {
             var clients = await _superAdminRepository.GetAllClientsPagedPending(page, pageSize);
             int totalClients = await _superAdminRepository.GetClientCount("Pending");
@@ -36,7 +37,7 @@ namespace Capstone_Banking.Service
            return await _superAdminRepository.GetClientById(id);
         }
 
-        public async Task<ICollection<Client>> GetClientName(string companyName, string status)
+        public async Task<ICollection<User>> GetClientName(string companyName, string status)
         {
             var clients = _superAdminRepository.GetClientName(companyName,status);
             if (clients.Count() == 0) 

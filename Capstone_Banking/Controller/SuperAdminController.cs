@@ -66,7 +66,7 @@ namespace Capstone_Banking.Controller
         }
 
         [HttpGet("ClientByName/{companyName}/{status}")]
-        public async Task<ICollection<Client>> GetByName(string companyName,string status)
+        public async Task<ICollection<User>> GetByName(string companyName,string status)
         {
             return await _superAdminService.GetClientName(companyName,status);
 

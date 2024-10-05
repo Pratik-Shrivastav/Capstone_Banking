@@ -1,4 +1,5 @@
 ﻿using Capstone_Banking.Dto;
+using Capstone_Banking.Model;
 
 namespace Capstone_Banking.Service
 {
@@ -6,12 +7,12 @@ namespace Capstone_Banking.Service
     {
         public Task<(ICollection<Client>, int totalCount)> GetAllClientsPaged(int page, int pageSize);
         
-                    public Task<(ICollection<Client>, int totalCount)> GetAllClientsPagedPending(int page, int pageSize);
+       public Task<(ICollection<User>, int totalCount)> GetAllClientsPagedPending(int page, int pageSize);
 
         public Task<ICollection<Client>> GetAllClients();
 
         public Task<Client> GetClientsById(int id);
-        public Task<ICollection<Client>> GetClientName(string companyName, string status);
+        public Task<ICollection<User>> GetClientName(string companyName, string status);
         public Task<ICollection<Documents>> GetDocumentById(int Clientd);
 
         public void UpdateClientStatus(int clientId, string status);
