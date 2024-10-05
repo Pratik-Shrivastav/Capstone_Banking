@@ -1,4 +1,5 @@
-﻿using Capstone_Banking.CommonFunction;
+﻿using Azure.Core;
+using Capstone_Banking.CommonFunction;
 using Capstone_Banking.Data;
 using Capstone_Banking.Model;
 using Capstone_Banking.Service;
@@ -276,6 +277,19 @@ namespace Capstone_Banking.Controller
             public double Amount { get; set; }
             public List<int> EmployeeIds { get; set; } = new List<int>();
         }
+
+        //Get Beneficiary Object 
+
+        [HttpGet("Beneficiary/get")]
+        public async Task<IActionResult> GetBeneficiariesForOptionAsync(int pageIndex,int pageSize)
+
+        {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
+            var(paginatedBeneficiary,count) =  await _clientService.GetBeneficiariesForOptionAsync(int.Parse(userId),pageIndex, pageSize);
+            return Ok(new { paginatedBeneficiary, count });
+        }
+
 
        
         // POST: api/Client/Beneficiary/Payment

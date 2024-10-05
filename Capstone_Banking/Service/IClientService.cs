@@ -27,6 +27,9 @@ namespace Capstone_Banking.Service
         Task DeleteBeneficiaryAsync(int id);
         Task<IEnumerable<Beneficiary>> GetActiveBeneficiariesAsync(int userId);
 
+        public Task<(ICollection<Beneficiary>, int totalCount)> GetBeneficiariesForOptionAsync(int userId,int page, int pageSize);
+
+
 
         //Salary Disbursement Methods
         public Task<SalaryDisbursement> DisburseSalariesAsync(SalaryDisbursement salaryDisbursement, int userId, List<int> employeeIds);

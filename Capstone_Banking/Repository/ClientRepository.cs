@@ -331,6 +331,23 @@ namespace Capstone_Banking.Repository
             return paginatedBeneficiaryList;
         }
 
+        public async Task<(ICollection<Beneficiary>,int totalCount)> GetBeneficiariesForOptionAsync(int userId, int page, int pageSize)
+        {
+            
+            User user = await _bankingDbContext.UserTable.Include(x => x.ClientObject)
+               .ThenInclude(y => y.BeneficiaryList)
+               .ThenInclude(z => z.AccountDetailsObject)
+               .FirstOrDefaultAsync(y => y.Id == userId);
+
+            int count = user.ClientObject.BeneficiaryList.Count();
+
+            var paginatedUser = user.ClientObject.BeneficiaryList.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            return(paginatedUser, count);
+
+        }
+
+
         public async Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync(int userId)
         {
             User user = await _bankingDbContext.UserTable

@@ -32,6 +32,8 @@ namespace Capstone_Banking.Repository
         Task<Payment> CreatePaymentAsync(Payment payment, int beneficiaryId, int userId);
         public  Task<ICollection<Beneficiary>> GetPaginatedRecentPaymentsWithBeneficiaryAsync(int clientId, int pageNumber, int pageSize);
 
+        public Task<(ICollection<Beneficiary>, int totalCount)> GetBeneficiariesForOptionAsync(int userId,int page, int pageSize);
+
         Task<IEnumerable<Beneficiary>> GetActiveBeneficiariesAsync(int userId);
         Task<Payment> GetPaymentByIdAsync(int paymentId);
 
