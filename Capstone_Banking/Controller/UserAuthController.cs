@@ -62,6 +62,7 @@ namespace Capstone_Banking.Controller
             return "Empty";
         }
 
+        [Authorize(Roles = "Client")]
         [HttpGet]
         public async Task<User> GetUser()
         {
@@ -76,6 +77,23 @@ namespace Capstone_Banking.Controller
             return usernamesPresent;
         }
 
+        [Authorize(Roles = "Client")]
+
+        [HttpGet("Download/{fileName}")]
+        public async Task<IActionResult> DownloadFile(string fileName)
+        {
+
+            BankingDbContext bankingDbContext = new BankingDbContext();
+            string fileResult = await _uploadHandler.DownloadFile(fileName);
+            if (fileResult.Length == 0)
+            {
+                return NotFound("File not found");
+            }
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            AddAuditLogs.AddLog(int.Parse(userId), "File Download", "File Downloaded");
+
+            return Ok(new { documentUrl = fileResult }); ;
+        }
 
 
     }

@@ -61,7 +61,7 @@ namespace Capstone_Banking.Repository
 
         public async Task<Client> GetClientById(int id)
         {
-            return await _db.ClientTable.Include(c => c.AccountDetailsObject)
+            return await _db.ClientTable.Include(c => c.AccountDetailsObject).Include(d=>d.DocumentList)
                 .Include(t => t.BeneficiaryList).ThenInclude(q => q.AccountDetailsObject)
                 .Include(e => e.BeneficiaryList).ThenInclude(x => x.PaymentsList).ThenInclude(e => e.Transactions)
                 .FirstOrDefaultAsync(z => z.Id == id);
@@ -85,7 +85,9 @@ namespace Capstone_Banking.Repository
         public async Task<ICollection<Documents>> GetDocuments(int clientId)
         {
             Client client= await _db.ClientTable.Include(c => c.DocumentList).FirstOrDefaultAsync(x=>x.Id==clientId);
-            return client.DocumentList;
+            return client.DocumentList.Skip(Math.Max(0, client.DocumentList.Count - 3))
+                    .Take(3) 
+                    .ToList();
         }
 
         public async Task<(ICollection<SalaryDisbursementResponseDto>, int count)> GetSalaryDisbursementClient(int clientId, int page, int pageSize)
