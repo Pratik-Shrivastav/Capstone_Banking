@@ -113,12 +113,13 @@ namespace Capstone_Banking.Controller
         }
 
         [HttpPut("PaymentStatus/{clientId}/{beneficiaryId}/{paymentId}")]
-        public void PaymentStatus(int clientId,int beneficiaryId, int paymentId, [FromBody] string value)
+        public async Task<bool> PaymentStatus(int clientId,int beneficiaryId, int paymentId, [FromBody] string value)
         {
             Console.WriteLine(clientId);
-            _superAdminService.UpdatePaymentStatus(clientId, beneficiaryId, paymentId, value);
+            bool result = await _superAdminService.UpdatePaymentStatus(clientId, beneficiaryId, paymentId, value);
             string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
             AddAuditLogs.AddLog(int.Parse(userId), "Payment Status", $"ClientId: {clientId} PaymentId-{paymentId} {value}");
+            return result;
         }
 
         [HttpPut("SalaryDisbursementStatus/{clientId}/{salaryDisId}")]

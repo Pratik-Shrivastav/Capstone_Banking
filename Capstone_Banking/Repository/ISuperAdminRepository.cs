@@ -21,7 +21,7 @@ namespace Capstone_Banking.Repository
 
         public void ClientStatus(int clientId, string status);
 
-        public void UpdatePaymentStatus(int clientId,int beneficiaryId, int payementId, string status);
+        public bool UpdatePaymentStatus(int clientId,int beneficiaryId, int payementId, string status);
 
         public void UpdateSalaryDisbursementStatus(int clientId,int salaryDisId, string status);
 

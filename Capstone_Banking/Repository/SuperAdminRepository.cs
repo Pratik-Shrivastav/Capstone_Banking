@@ -129,7 +129,7 @@ namespace Capstone_Banking.Repository
             _db.SaveChanges();
         }
 
-        public void UpdatePaymentStatus(int clientId, int beneficiaryId, int paymentId, string status)
+        public bool UpdatePaymentStatus(int clientId, int beneficiaryId, int paymentId, string status)
         {
             try
             {
@@ -194,10 +194,12 @@ namespace Capstone_Banking.Repository
                     else if (client.AccountDetailsObject.AccountBalance < payment.Amount)
                     {
                         throw new Exception("Insufficient Balance");
+                        
                     }
                 }
                 // Save changes to the database
                 Console.WriteLine("Changes saved successfully.");
+                return true;
             }
             catch (Exception ex)
             {
