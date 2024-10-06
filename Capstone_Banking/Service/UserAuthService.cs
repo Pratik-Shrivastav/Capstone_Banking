@@ -161,6 +161,17 @@ namespace Capstone_Banking.Service
             return !isUsernameTaken;
         }
 
+        public async Task<bool> GetUniqueAccountNumbers(string accountNumber)
+        {
+            var users = await _userAuthRepository.GetAllUser();
+            var isAccountNumberTaken = users.Any(user =>
+                user.ClientObject != null &&
+                user.ClientObject.AccountDetailsObject != null &&
+                user.ClientObject.AccountDetailsObject.AccountNumber == accountNumber);
+            return !isAccountNumberTaken;
+        }
+
+
 
 
     }

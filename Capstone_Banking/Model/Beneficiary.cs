@@ -20,10 +20,11 @@ namespace Capstone_Banking.Model
         public bool IsActive { get; set; }
 
         [Required(ErrorMessage = "Account details are required.")]
-        public AccountDetails AccountDetailsObject { get; set; }
+        public AccountDetails? AccountDetailsObject { get; set; }
 
         public ICollection<Payment>? PaymentsList { get; set; }
-
+        
+        public int? clientId { get; set; }
 
 
 

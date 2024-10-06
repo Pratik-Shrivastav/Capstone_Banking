@@ -77,6 +77,13 @@ namespace Capstone_Banking.Controller
             return usernamesPresent;
         }
 
+        [HttpGet("AccountNumber/{accountNumber}")]
+        public async Task<bool> GetClientsAccountNumber(string accountNumber)
+        {
+            var accountNumberPresent = await _userAuthService.GetUniqueAccountNumbers(accountNumber);
+            return accountNumberPresent;
+        }
+
         [Authorize(Roles = "Client")]
 
         [HttpGet("Download/{fileName}")]

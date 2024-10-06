@@ -32,8 +32,9 @@ namespace Capstone_Banking.Repository
 
         public async Task<ICollection<User>> GetAllUser()
         {
-            return await _bankingDbContext.UserTable.ToListAsync();
+            return await _bankingDbContext.UserTable.Include(c=>c.ClientObject).ThenInclude(x=>x.AccountDetailsObject).ToListAsync();
         }
+
 
     }
     
