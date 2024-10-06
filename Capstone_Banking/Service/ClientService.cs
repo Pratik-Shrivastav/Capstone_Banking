@@ -136,6 +136,15 @@ namespace Capstone_Banking.Service
         {
             return await _clientRepository.GetPaymentsForBeneficiaryPaginated(userId, beneficiaryId, pageNumber, pageSize);
         }
+        public async Task<(ICollection<Beneficiary>, int totalCount)> SearchBeneficiariesAsync(int userId, string searchTerm, int pageNumber, int pageSize)
+        {
+            return await _clientRepository.SearchBeneficiariesAsync(userId, searchTerm, pageNumber, pageSize);
+        }
+        public async Task<(ICollection<Payment>, int totalCount)> SearchPaymentsForBeneficiaryAsync(int userId, int beneficiaryId, string searchTerm, int pageNumber, int pageSize)
+        {
+            return await _clientRepository.SearchPaymentsForBeneficiaryAsync(userId, beneficiaryId, searchTerm,pageNumber, pageSize);
+        }
+
 
         public Task<ICollection<AuditLog>> GetAuditLogs(int userId)
 

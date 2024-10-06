@@ -460,6 +460,72 @@ namespace Capstone_Banking.Repository
             return (paginatedPayments, totalCount);
         }
 
+        //Search in beneficiary list
+        public async Task<(ICollection<Beneficiary>, int totalCount)> SearchBeneficiariesAsync(int userId, string searchTerm, int pageNumber, int pageSize)
+        {
+            User user = await _bankingDbContext.UserTable
+                .Include(x => x.ClientObject)
+                .ThenInclude(y => y.BeneficiaryList)
+                .ThenInclude(z => z.AccountDetailsObject)
+                .FirstOrDefaultAsync(y => y.Id == userId);
+
+            // Initialize the list of beneficiaries to filter
+            var beneficiaries = user.ClientObject.BeneficiaryList.ToList();
+
+            // Handle case when the searchTerm is null or empty
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+
+                beneficiaries = beneficiaries.Where(b =>
+                    b.BenificiaryName.ToLower().StartsWith(searchTerm) ||
+                    b.Email.ToLower().StartsWith(searchTerm) ||
+                    (b.AccountDetailsObject != null && b.AccountDetailsObject.AccountNumber.ToLower().StartsWith(searchTerm))
+                ).ToList();
+            }
+
+            int count = beneficiaries.Count();
+            var paginatedBeneficiaries = beneficiaries.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+            return (paginatedBeneficiaries, count);
+        }
+
+        public async Task<(ICollection<Payment>, int totalCount)> SearchPaymentsForBeneficiaryAsync(int userId, int beneficiaryId, string searchTerm, int pageNumber, int pageSize)
+        {
+            // Load the user with related Client and Beneficiary data
+            User user = await _bankingDbContext.UserTable
+                .Include(x => x.ClientObject)
+                    .ThenInclude(client => client.BeneficiaryList)
+                        .ThenInclude(beneficiary => beneficiary.PaymentsList)
+                            .ThenInclude(payment => payment.Transactions)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            // Get the specific beneficiary by its ID
+            var beneficiary = user?.ClientObject?.BeneficiaryList.FirstOrDefault(b => b.Id == beneficiaryId);
+
+            if (beneficiary == null)
+            {
+                return (new List<Payment>(), 0); // Return empty if no beneficiary is found
+            }
+
+            // Filter payments based on the search term (if provided)
+            var query = string.IsNullOrWhiteSpace(searchTerm)
+                ? beneficiary.PaymentsList
+                : beneficiary.PaymentsList.Where(p => p.PaymentType.ToLower().Contains(searchTerm.ToLower()));
+
+            // Get the total count of payments after filtering
+            int totalCount = query.Count();
+
+            // Paginate the payments list
+            var paginatedPayments = query
+                .OrderBy(p => p.CreatedAt) // Adjust the ordering as needed
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return (paginatedPayments, totalCount);
+        }
+
 
 
         public async Task<ICollection<AuditLog>> GetAuditLogs(int userId)

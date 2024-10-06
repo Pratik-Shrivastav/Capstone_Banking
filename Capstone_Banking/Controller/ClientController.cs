@@ -413,7 +413,24 @@ namespace Capstone_Banking.Controller
             return Ok(new {paginatedPayments,count});
         }
 
+        [HttpGet("beneficiaries/search")]
+        public async Task<IActionResult> SearchBeneficiaries(string searchTerm = "", int pageNumber = 1, int pageSize = 5)
+        {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
 
+            var (paginatedBeneficiaries, count) = await _clientService.SearchBeneficiariesAsync(int.Parse(userId), searchTerm, pageNumber, pageSize);
+            return Ok(new { paginatedBeneficiaries, count });
+        }
+
+
+        [HttpGet("beneficiaries/payments/search")]
+        public async Task<IActionResult> SearchPaymentsForBeneficiary(int beneficiaryId, string searchTerm = "", int pageNumber = 1, int pageSize = 5)
+        {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
+            var (paginatedPayments, count) = await _clientService.SearchPaymentsForBeneficiaryAsync(int.Parse(userId), beneficiaryId, searchTerm, pageNumber, pageSize);
+            return Ok(new { paginatedPayments, count });
+        }
 
         [HttpGet("auditlogs")]
         public async Task<ActionResult<IEnumerable<AuditLog>>> GetAuditLogs()
