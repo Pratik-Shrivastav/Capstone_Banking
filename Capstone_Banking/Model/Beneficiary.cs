@@ -18,13 +18,11 @@ namespace Capstone_Banking.Model
         public DateTime CreatedOn { get; set; } = DateTime.Now; // Defaults to now if not set
 
         public bool IsActive { get; set; }
-
-        [Required(ErrorMessage = "Account details are required.")]
         public AccountDetails? AccountDetailsObject { get; set; }
 
         public ICollection<Payment>? PaymentsList { get; set; }
         
-        public int? clientId { get; set; }
+        public int? InbounClientId { get; set; }
 
 
 

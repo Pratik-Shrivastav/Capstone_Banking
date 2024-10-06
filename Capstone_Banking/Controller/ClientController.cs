@@ -449,6 +449,26 @@ namespace Capstone_Banking.Controller
 
             return Ok(auditLogs);
         }
+
+        [HttpGet("GetInboundClients")]
+        public IActionResult GetInboundClients(int page, int pageSize)
+        {
+            return Ok(_clientService.GetInboundClients(page, pageSize));
+        }
+
+        [HttpGet("GetSearchedInboundClients")]
+        public IActionResult GetSearchedInboundClients(string searchTerm, int page, int pageSize)
+        {
+            return Ok(_clientService.GetSearchedInboundClients(searchTerm, page, pageSize));    
+        }
+
+        [HttpPost("AddInboundBeneficiary")]
+        public void AddInboundBeneficiary([FromBody]int clientTobeAdded)
+        {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            _clientService.AddInboundBeneficiary(int.Parse(userId), clientTobeAdded);
+        }
+
     }
     }
 

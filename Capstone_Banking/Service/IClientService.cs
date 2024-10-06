@@ -53,5 +53,11 @@ namespace Capstone_Banking.Service
         //Audit Log Methods
         public Task<ICollection<AuditLog>> GetAuditLogs(int userId);
 
+        //inbound Methods
+
+        public Object GetInboundClients(int page, int pageSize);
+        public Object GetSearchedInboundClients(string searchTerm, int page, int pageSize);
+        public void AddInboundBeneficiary(int userId, int clientToBeAdded);
+
     }
 }

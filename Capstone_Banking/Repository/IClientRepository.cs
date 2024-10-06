@@ -47,5 +47,11 @@ namespace Capstone_Banking.Repository
 
         public Task<ICollection<AuditLog>> GetAuditLogs(int userId);
 
+        public (ICollection<Client>, int count) GetInboundClients(int page, int pageSize);
+        public (ICollection<Client>, int count) GetSearchedInboundClients(string searchTerm, int page, int pageSize);
+
+        public void AddInboundBeneficiary(int userId, int clientToBeAdded);
+
+
     }
 }

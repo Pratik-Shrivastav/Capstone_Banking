@@ -151,5 +151,22 @@ namespace Capstone_Banking.Service
         {
             return _clientRepository.GetAuditLogs(userId);
         }
+
+        public Object GetInboundClients(int page, int pageSize)
+        {
+            var (paginatedClients, count) = _clientRepository.GetInboundClients(page, pageSize);
+            return new { paginatedClients, count };
+        }
+        public Object GetSearchedInboundClients(string searchTerm, int page, int pageSize)
+        {
+            var (paginatedClients, count) = _clientRepository.GetSearchedInboundClients(searchTerm ,page, pageSize);
+            return new { paginatedClients, count };
+        }
+
+        public void AddInboundBeneficiary(int userId, int clientToBeAdded)
+        {
+            _clientRepository.AddInboundBeneficiary(userId, clientToBeAdded);
+        }
+
     }
 }
