@@ -426,6 +426,42 @@ namespace Capstone_Banking.Repository
             return (salaryDisbursementResponseDtos,count);
         }
 
+        public async Task<(ICollection<Payment>, int totalCount)> GetPaymentsForBeneficiaryPaginated(int userId, int beneficiaryId, int pageNumber, int pageSize)
+        {
+            // Load the user with related Client, Beneficiary, Account, Payments, and Transactions data
+            User user = await _bankingDbContext.UserTable
+                .Include(x => x.ClientObject)
+                    .ThenInclude(client => client.BeneficiaryList)
+                        .ThenInclude(beneficiary => beneficiary.PaymentsList)
+                            .ThenInclude(payment => payment.Transactions)
+                .Include(x => x.ClientObject)
+                    .ThenInclude(client => client.BeneficiaryList)
+                        .ThenInclude(beneficiary => beneficiary.AccountDetailsObject)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            // Get the specific beneficiary by its ID
+            var beneficiary = user?.ClientObject?.BeneficiaryList.FirstOrDefault(b => b.Id == beneficiaryId);
+
+            if (beneficiary == null)
+            {
+                return (new List<Payment>(), 0); // Return empty if no beneficiary is found
+            }
+
+            // Get the total count of payments for the beneficiary
+            int totalCount = beneficiary.PaymentsList.Count;
+
+            // Paginate the payments list
+            var paginatedPayments = beneficiary.PaymentsList
+                .OrderBy(p => p.CreatedAt) // You can adjust this ordering as needed
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return (paginatedPayments, totalCount);
+        }
+
+
+
         public async Task<ICollection<AuditLog>> GetAuditLogs(int userId)
 
         {

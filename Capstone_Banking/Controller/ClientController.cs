@@ -403,6 +403,18 @@ namespace Capstone_Banking.Controller
             return Ok(new { disbursements, count });
         }
 
+        //GET Paginated Payment List of Clicked Beneficiary
+        [HttpGet("beneficiaries/payments-paginated")]
+        public async Task<IActionResult> GetPaymentsForBeneficiaryPaginatedFromBackend(int beneficiaryId,int pageNumber = 1, int pageSize = 5)
+        {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
+            var (paginatedPayments,count) = await _clientService.GetPaymentsForBeneficiaryPaginated(int.Parse(userId),beneficiaryId,pageNumber, pageSize);
+            return Ok(new {paginatedPayments,count});
+        }
+
+
+
         [HttpGet("auditlogs")]
         public async Task<ActionResult<IEnumerable<AuditLog>>> GetAuditLogs()
         {

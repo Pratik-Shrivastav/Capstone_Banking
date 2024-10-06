@@ -131,6 +131,12 @@ namespace Capstone_Banking.Service
         {
             return await _clientRepository.GetSalaryDisbursementsAsync(userId); // Call the repository method for salary disbursements
         }
+
+        public async Task<(ICollection<Payment>, int totalCount)> GetPaymentsForBeneficiaryPaginated(int userId, int beneficiaryId, int pageNumber, int pageSize)
+        {
+            return await _clientRepository.GetPaymentsForBeneficiaryPaginated(userId, beneficiaryId, pageNumber, pageSize);
+        }
+
         public Task<ICollection<AuditLog>> GetAuditLogs(int userId)
 
         {

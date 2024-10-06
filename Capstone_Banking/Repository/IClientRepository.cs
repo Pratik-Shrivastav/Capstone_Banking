@@ -39,6 +39,9 @@ namespace Capstone_Banking.Repository
 
         public Task<ICollection<Beneficiary>> GetRecentPaymentsWithBeneficiaryAsync(int clientId);
         public  Task<List<SalaryDisbursementResponseDto>> GetSalaryDisbursementsAsync(int userId);
+
+        public Task<(ICollection<Payment>, int totalCount)> GetPaymentsForBeneficiaryPaginated(int userId, int beneficiaryId,int pageNumber, int pageSize);
+
         public Task<ICollection<AuditLog>> GetAuditLogs(int userId);
 
     }

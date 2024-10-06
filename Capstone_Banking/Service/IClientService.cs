@@ -43,6 +43,8 @@ namespace Capstone_Banking.Service
         Task<Payment> GetPaymentByIdAsync(int paymentId);
         public Task<ICollection<Beneficiary>> GetPaginatedRecentPaymentsWithBeneficiaryAsync(int clientId, int pageNumber, int pageSize);
         public Task<ICollection<Beneficiary>> GetRecentPaymentsWithBeneficiaryAsync(int clientId);
+        public Task<(ICollection<Payment>, int totalCount)> GetPaymentsForBeneficiaryPaginated(int userId, int beneficiaryId, int pageNumber, int pageSize);
+        
 
 
         //Audit Log Methods
