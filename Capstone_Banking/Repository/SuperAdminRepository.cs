@@ -230,7 +230,7 @@ namespace Capstone_Banking.Repository
 
         public (ICollection<Beneficiary>, int count) BeneficiartyOption(int clientId, int page, int pageSize)
         {
-            Client client =  _db.ClientTable.Include(c => c.BeneficiaryList)
+            Client client =  _db.ClientTable.Include(c => c.BeneficiaryList.Where(b=>b.IsActive))
                             .ThenInclude(ac => ac.AccountDetailsObject)
                             .FirstOrDefault(f=>f.Id==clientId);
                                         
@@ -252,6 +252,35 @@ namespace Capstone_Banking.Repository
                 Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
             return (paginatedPayments, count);
+
+        }
+
+        public (ICollection<Beneficiary>, int count) GetBeneficiaryByName(int clientId, string beneficiaryName, int page, int pageSize)
+        {
+            Client client = _db.ClientTable.Include(c => c.BeneficiaryList.Where(b => b.IsActive))
+                            .ThenInclude(ac => ac.AccountDetailsObject)
+                            .FirstOrDefault(f => f.Id == clientId);
+
+           var paginatedBeneficiarySearch = client.BeneficiaryList.Where(c=>c.BenificiaryName.StartsWith(beneficiaryName))
+                                            .Where(b=>b.IsActive).Skip((page-1)*pageSize).Take(pageSize).ToList();
+            int count = paginatedBeneficiarySearch.Count();
+            return (paginatedBeneficiarySearch, count);
+        }
+
+
+        public (ICollection<Payment>, int count) GetPaymentByName(int beneficiaryId, string paymentName, int page, int pageSize)
+        {
+            Beneficiary beneficiary = _db.BeneficiaryTable.Include(c=>c.PaymentsList).ThenInclude(x=>x.Transactions)
+                                      .FirstOrDefault(z=>z.Id == beneficiaryId);
+
+            var payments = beneficiary.PaymentsList.Where(c=>c.PaymentType.StartsWith(paymentName)).
+                                           OrderBy(c=>c.PaymentType).ToList();
+            var paginatedPaymentSearch = payments.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            var count = payments.Count();
+
+            return (paginatedPaymentSearch, count);
+
 
         }
 

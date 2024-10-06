@@ -27,7 +27,9 @@ namespace Capstone_Banking.Service
 
         public Object PaymentsOfBeneficiary(int beneficiaryId, int page, int pageSize);
 
+        public Object GetBeneficiaryByName(int clientId, string beneficiaryName, int page, int pageSize);
 
+        public Object GetPaymentByName(int beneficiaryId, string paymentName, int page, int pageSize);
 
 
 

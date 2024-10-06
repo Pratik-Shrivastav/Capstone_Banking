@@ -124,7 +124,6 @@ namespace Capstone_Banking.Controller
         [HttpPut("SalaryDisbursementStatus/{clientId}/{salaryDisId}")]
         public void SalaryDisbursementStatus(int clientId, int salaryDisId, [FromBody] string value)
         {
-            Console.WriteLine(clientId);
             _superAdminService.UpdateSalaryDisbursementStatus(clientId,salaryDisId, value);
             string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
             AddAuditLogs.AddLog(int.Parse(userId), "Salary Disbursement Status", $"ClientId: {clientId} SalaryId-{salaryDisId} {value}");
@@ -143,8 +142,18 @@ namespace Capstone_Banking.Controller
 
         }
 
+        [HttpGet("GetBeneficiaryByName/{clientId}/{beneficiaryName}")]
+        public IActionResult GetBeneficiaryByName(int clientId, string beneficiaryName, int page, int pageSize)
+        {
+            return Ok(_superAdminService.GetBeneficiaryByName(clientId,beneficiaryName,page,pageSize));
+        }
 
+        [HttpGet("GetPaymentByName/{beneficiaryId}/{paymentName}")]
 
+        public IActionResult GetPaymnetByName(int beneficiaryId, string paymentName, int page, int pageSize) 
+        {
+            return Ok(_superAdminService.GetPaymentByName(beneficiaryId,paymentName,page,pageSize));
+        }
 
     }
 }

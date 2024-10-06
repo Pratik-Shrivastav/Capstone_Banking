@@ -29,9 +29,8 @@ namespace Capstone_Banking.Repository
 
         public  (ICollection<Payment>, int count) PaymentsOfBeneficiary(int beneficiaryId, int page, int pageSize);
 
-
-
-
+        public (ICollection<Beneficiary>, int count) GetBeneficiaryByName(int clientId, string beneficiaryName, int page, int pageSize);
+        public (ICollection<Payment>, int count) GetPaymentByName(int beneficiaryId, string paymentName, int page, int pageSize);
 
     }
 }

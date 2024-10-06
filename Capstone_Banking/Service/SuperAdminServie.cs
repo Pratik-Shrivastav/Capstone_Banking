@@ -83,8 +83,17 @@ namespace Capstone_Banking.Service
             return new {paginatedPayments, count};
         }
 
+        public Object GetBeneficiaryByName(int clientId, string beneficiaryName, int page, int pageSize)
+        {
+            var (paginatedBeneficiarySearch, count)= _superAdminRepository.GetBeneficiaryByName(clientId, beneficiaryName, page, pageSize);
+            return new {paginatedBeneficiarySearch,count};
+        }
 
-
+        public Object GetPaymentByName(int beneficiaryId, string paymentName, int page, int pageSize)
+        {
+            var (paginatedPaymentSearch, count) = _superAdminRepository.GetPaymentByName(beneficiaryId, paymentName, page, pageSize);
+            return new { paginatedPaymentSearch, count};
+        }
 
 
     }

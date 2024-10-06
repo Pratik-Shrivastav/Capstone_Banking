@@ -91,6 +91,9 @@ namespace Capstone_Banking.Service
                         loginResponse.Message = "Login Successful";
                         loginResponse.Success = true;
                         loginResponse.Token = GenerateToken.GetToken(user, _configuration);
+                        loginResponse.Role = user.Role;
+                        loginResponse.Id = user.Id;
+
                         if (loginResponse.Role == "Client")
                         {
                             loginResponse.UserName = user.ClientObject.CompanyName;
@@ -109,8 +112,6 @@ namespace Capstone_Banking.Service
                             loginResponse.Status = user.ClientObject.Status;
 
                         }
-                        loginResponse.Role = user.Role;
-                        loginResponse.Id = user.Id;
 
                         // Create and save audit log
                         AuditLog auditLog = new AuditLog()
