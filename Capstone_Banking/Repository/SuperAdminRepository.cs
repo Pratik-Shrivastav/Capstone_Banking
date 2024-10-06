@@ -167,10 +167,28 @@ namespace Capstone_Banking.Repository
                             TransactionStatus = status,
                         };
                         payment.Transactions.Add(transaction);
-                        client.AccountDetailsObject.AccountBalance = client.AccountDetailsObject.AccountBalance - payment.Amount;
-                        string subject = "Account Credited";
-                        string body = $"Amount {payment.Amount} had been credited to the AccountNo: {beneficiary.AccountDetailsObject.AccountNumber}";
-                        EmailHandler.SendEmail(beneficiary.Email, subject, body);
+                        
+                        if (beneficiary.AccountDetailsObject == null)
+                        {
+                            Client inboundClient = _db.ClientTable.Include(ac=>ac.AccountDetailsObject).FirstOrDefault(f=>f.Id==beneficiary.InbounClientId);
+                            inboundClient.AccountDetailsObject.AccountBalance += payment.Amount;
+                            string subject = "Account Credited";
+                            string body = $"Amount {payment.Amount} had been credited to the AccountNo: {inboundClient.AccountDetailsObject.AccountNumber}";
+                            EmailHandler.SendEmail(beneficiary.Email, subject, body);
+                            client.AccountDetailsObject.AccountBalance = client.AccountDetailsObject.AccountBalance - payment.Amount;
+                            _db.SaveChanges();
+                        }
+                        else
+                        {
+                            string subject = "Account Credited";
+                            string body = $"Amount {payment.Amount} had been credited to the AccountNo: {beneficiary.AccountDetailsObject.AccountNumber}";
+                            EmailHandler.SendEmail(beneficiary.Email, subject, body);
+
+                            client.AccountDetailsObject.AccountBalance = client.AccountDetailsObject.AccountBalance - payment.Amount;
+                            _db.SaveChanges();
+
+                        }
+
 
                     }
                     else if (client.AccountDetailsObject.AccountBalance < payment.Amount)
@@ -179,7 +197,6 @@ namespace Capstone_Banking.Repository
                     }
                 }
                 // Save changes to the database
-                _db.SaveChanges();
                 Console.WriteLine("Changes saved successfully.");
             }
             catch (Exception ex)
@@ -236,6 +253,20 @@ namespace Capstone_Banking.Repository
                             .ThenInclude(ac => ac.AccountDetailsObject)
                             .FirstOrDefault(f=>f.Id==clientId);
                                         
+            var inboundCLientsIncluded = new List<Beneficiary>();
+            foreach(Beneficiary beneficiary in client.BeneficiaryList)
+            {
+                if (beneficiary.AccountDetailsObject == null)
+                {
+                    Client inbounCLient = _db.ClientTable.Include(ac => ac.AccountDetailsObject).FirstOrDefault(f => f.Id == beneficiary.InbounClientId);
+                    beneficiary.AccountDetailsObject = inbounCLient.AccountDetailsObject;
+                    inboundCLientsIncluded.Add(beneficiary);
+                }
+                else
+                {
+                    inboundCLientsIncluded.Add(beneficiary);
+                }
+            }
             int count =  client.BeneficiaryList.Count();
             var paginatedBenificiary =  client.BeneficiaryList.OrderBy(s=>s.BenificiaryName).
                 Skip((page-1) * pageSize).Take(pageSize).ToList();

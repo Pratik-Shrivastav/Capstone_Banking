@@ -140,7 +140,11 @@ namespace Capstone_Banking.Repository
                     beneficiary.AccountDetailsObject = inboundClient.AccountDetailsObject;
                     beneficiaries.Add(beneficiary);
                 }
-                beneficiaries.Add(beneficiary);
+                else
+                {
+                    beneficiaries.Add(beneficiary);
+
+                }
             }
 
 
