@@ -198,6 +198,7 @@ namespace Capstone_Banking.Repository
                     }
                 }
                 // Save changes to the database
+                _db.SaveChanges();
                 Console.WriteLine("Changes saved successfully.");
                 return true;
             }
