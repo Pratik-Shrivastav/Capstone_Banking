@@ -469,6 +469,21 @@ namespace Capstone_Banking.Controller
             _clientService.AddInboundBeneficiary(int.Parse(userId), clientTobeAdded);
         }
 
+        [HttpPost("AddUsingCsv")]
+        public IActionResult AddEmployesUsingCSV(IFormFile formFile) 
+        {
+            try
+            {
+                string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+                EmployeesCsv.AddBulkEmpoloyees(int.Parse(userId), formFile);
+                return Ok();
+            }
+            catch (Exception ex) 
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
     }
 
