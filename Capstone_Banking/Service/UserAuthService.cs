@@ -50,6 +50,9 @@ namespace Capstone_Banking.Service
             newClient.Phone = registerDto.Phone;
             newClient.Status = "Pending";
             newClient.IsActive = true;
+            newClient.ForSalary = registerDto.ForSalary;
+            newClient.ForPayment = registerDto.ForPayment;
+            newClient.ForPayment = registerDto.ForPayment;
 
             newAccountDetails.AccountNumber = registerDto.AccountNumber;
             newAccountDetails.Branch = registerDto.Branch;
