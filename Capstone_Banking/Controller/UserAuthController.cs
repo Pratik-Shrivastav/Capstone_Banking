@@ -114,7 +114,7 @@ namespace Capstone_Banking.Controller
 
             EmailHandler.SendEmail(user.Email, "OTP to reset Password", $"{otp}");
 
-            return Ok("OTP sent to email");
+            return StatusCode(200);
         }
 
         [HttpPost("VerifyOtp")]
@@ -125,7 +125,8 @@ namespace Capstone_Banking.Controller
             if (user.OTP == double.Parse(verifyOtpDto.Otp)) 
             {
                 user.isVerified = true;
-                return Ok("OTP verified successfully");
+                _bankingDbContext.SaveChanges();
+                return StatusCode(200);
 
             }
             // Check if OTP matches for the email
@@ -144,7 +145,7 @@ namespace Capstone_Banking.Controller
             }
             user.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(resetPasswordDto.NewPassword);
             _bankingDbContext.SaveChanges();
-            return Ok("Password reset successfully");
+            return StatusCode(200);
         }
 
 
