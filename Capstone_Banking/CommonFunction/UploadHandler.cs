@@ -79,7 +79,7 @@ using Microsoft.Extensions.Options;
                     var uploadParams = new ImageUploadParams()
                     {
                         File = new FileDescription(file.FileName, stream),
-                        Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face")
+                        //Transformation = new Transformation().Height(1000).Width(1000).Crop("fill").Gravity("face")
                     };
                     uploadResult = await _cloudinary.UploadAsync(uploadParams);
                     var fileDetails = new Documents()

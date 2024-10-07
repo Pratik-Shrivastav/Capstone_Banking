@@ -104,16 +104,20 @@ namespace Capstone_Banking.Repository
           var beneficiaries = new List<Beneficiary>();
             foreach(Beneficiary beneficiary in users.ClientObject.BeneficiaryList)
             {
-                if(beneficiary.AccountDetailsObject == null)
+                if (beneficiary.IsActive)
                 {
-                    Client inboundClient = _bankingDbContext.ClientTable.Include(ac => ac.AccountDetailsObject).FirstOrDefault(f => f.Id == beneficiary.InbounClientId);
-                    beneficiary.AccountDetailsObject = inboundClient.AccountDetailsObject;
-                    beneficiaries.Add(beneficiary);
+                    if (beneficiary.AccountDetailsObject == null)
+                    {
+                        Client inboundClient = _bankingDbContext.ClientTable.Include(ac => ac.AccountDetailsObject).FirstOrDefault(f => f.Id == beneficiary.InbounClientId);
+                        beneficiary.AccountDetailsObject = inboundClient.AccountDetailsObject;
+                        beneficiaries.Add(beneficiary);
+                    }
+                    else
+                    {
+                        beneficiaries.Add(beneficiary);
+                    }
                 }
-                else
-                {
-                    beneficiaries.Add(beneficiary);
-                }
+                
             }
             return beneficiaries;
         }
@@ -121,30 +125,28 @@ namespace Capstone_Banking.Repository
         // Get All Beneficiaries Paged
         public async Task<(IEnumerable<Beneficiary> beneficiaries, int totalCount)> GetBeneficiaryPagedAsync(int userId, int page, int pageSize)
         {
-            User user = await _bankingDbContext.UserTable
-                .Include(x => x.ClientObject)
-                .ThenInclude(y => y.BeneficiaryList)
-                .ThenInclude(z => z.AccountDetailsObject)
-                .FirstOrDefaultAsync(y => y.Id == userId);
-
-            User users = await _bankingDbContext.UserTable.Include(x => x.ClientObject)
+         User users = await _bankingDbContext.UserTable.Include(x => x.ClientObject)
                 .ThenInclude(y => y.BeneficiaryList)
                 .ThenInclude(z => z.AccountDetailsObject)
                 .FirstOrDefaultAsync(y => y.Id == userId);
             var beneficiaries = new List<Beneficiary>();
             foreach (Beneficiary beneficiary in users.ClientObject.BeneficiaryList)
             {
-                if (beneficiary.AccountDetailsObject == null)
+                if (beneficiary.IsActive)
                 {
-                    Client inboundClient = _bankingDbContext.ClientTable.Include(ac => ac.AccountDetailsObject).FirstOrDefault(f => f.Id == beneficiary.InbounClientId);
-                    beneficiary.AccountDetailsObject = inboundClient.AccountDetailsObject;
-                    beneficiaries.Add(beneficiary);
-                }
-                else
-                {
-                    beneficiaries.Add(beneficiary);
+                    if (beneficiary.AccountDetailsObject == null)
+                    {
+                        Client inboundClient = _bankingDbContext.ClientTable.Include(ac => ac.AccountDetailsObject).FirstOrDefault(f => f.Id == beneficiary.InbounClientId);
+                        beneficiary.AccountDetailsObject = inboundClient.AccountDetailsObject;
+                        beneficiaries.Add(beneficiary);
+                    }
+                    else
+                    {
+                        beneficiaries.Add(beneficiary);
 
+                    }
                 }
+                
             }
 
 
@@ -165,7 +167,7 @@ namespace Capstone_Banking.Repository
         {
             // Fetch the client associated with the user
             var beneficiaries = await _bankingDbContext.BeneficiaryTable
-                .Include(x => x.AccountDetailsObject).Where(s => s.BenificiaryName.StartsWith(searchTerm)).ToListAsync();
+                .Include(x => x.AccountDetailsObject).Where(s => s.BenificiaryName.StartsWith(searchTerm)).Where(x=>x.IsActive).ToListAsync();
 
             return beneficiaries;
         }
@@ -336,10 +338,10 @@ namespace Capstone_Banking.Repository
 
         public async Task<ICollection<Beneficiary>> GetRecentPaymentsWithBeneficiaryAsync(int clientId)
         {
-           Client client = _bankingDbContext.ClientTable.Include(b=>b.BeneficiaryList).ThenInclude(p=>p.PaymentsList).ThenInclude(t=>t.Transactions)
+           User user = _bankingDbContext.UserTable.Include(e=>e.ClientObject).ThenInclude(b=>b.BeneficiaryList).ThenInclude(p=>p.PaymentsList).ThenInclude(t=>t.Transactions)
                 .FirstOrDefault(client=>client.Id == clientId);
 
-            return client.BeneficiaryList;
+            return user.ClientObject.BeneficiaryList;
 
         }
         public async Task<ICollection<Beneficiary>> GetPaginatedRecentPaymentsWithBeneficiaryAsync(int clientId, int pageNumber, int pageSize)
@@ -595,14 +597,14 @@ namespace Capstone_Banking.Repository
             User user = _bankingDbContext.UserTable.Include(c => c.ClientObject).ThenInclude(x=>x.AccountDetailsObject)
                         .Include(c => c.ClientObject).ThenInclude(e => e.BeneficiaryList)
                         .FirstOrDefault(f => f.Id == userId);
-            User inboundClient = _bankingDbContext.UserTable.Include(c=>c.ClientObject).FirstOrDefault(f=>f.Id == clientToBeAdded);
+            Client inboundClient = _bankingDbContext.ClientTable.FirstOrDefault(f=>f.Id == clientToBeAdded);
             if (user != null)
             {
                 
                 Beneficiary beneficiary = new Beneficiary()
                 {
-                    BenificiaryName = inboundClient.ClientObject.FounderName,
-                    Email = inboundClient.ClientObject.Email,
+                    BenificiaryName = inboundClient.FounderName,
+                    Email = inboundClient.Email,
                     CreatedOn = DateTime.Now,
                     IsActive = true,
                     InbounClientId = clientToBeAdded

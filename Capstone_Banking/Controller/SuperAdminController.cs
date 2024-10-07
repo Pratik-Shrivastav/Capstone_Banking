@@ -54,7 +54,6 @@ namespace Capstone_Banking.Controller
             user.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(user.Password);
             _bankingDbContext.UserTable.Add(user);
             _bankingDbContext.SaveChanges();
-            AddAuditLogs.AddLog(int.Parse(userId),"Super Admin Registered", "Registered");
            return user;
         }
 
