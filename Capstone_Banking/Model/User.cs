@@ -35,6 +35,9 @@ namespace Capstone_Banking.Model
 
         public ICollection<AuditLog>? AuditLogList { get; set; } = new List<AuditLog>();
 
+        public double? OTP {  get; set; }
+
+        public bool? isVerified { get; set; }
 
     }
 }
