@@ -470,13 +470,17 @@ namespace Capstone_Banking.Controller
         }
 
         [HttpPost("AddUsingCsv")]
-        public IActionResult AddEmployesUsingCSV(IFormFile formFile) 
+        public IActionResult AddEmployesUsingCSV(IFormFile CsvFile) 
         {
+            if (CsvFile == null || CsvFile.Length == 0)
+            {
+                return BadRequest("No file uploaded.");
+            }
             try
             {
                 string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
-                EmployeesCsv.AddBulkEmpoloyees(int.Parse(userId), formFile);
-                return Ok();
+                EmployeesCsv.AddBulkEmpoloyees(int.Parse(userId), CsvFile);
+                return Ok("Employees added successfully."); ;
             }
             catch (Exception ex) 
             {
