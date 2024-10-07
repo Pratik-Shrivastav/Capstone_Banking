@@ -191,9 +191,9 @@ namespace Capstone_Banking.Repository
 
 
                     }
-                    else if (client.AccountDetailsObject.AccountBalance < payment.Amount)
+                    else if ((client.AccountDetailsObject.AccountBalance*client.ForPayment*0.01) < payment.Amount)
                     {
-                        throw new Exception("Insufficient Balance");
+                        throw new Exception("Insufficient Balance For Payments");
                         
                     }
                 }
@@ -225,7 +225,7 @@ namespace Capstone_Banking.Repository
                 {
                     Employee employee = _db.EmployeeTable.Include(c=>c.AccountDetailsObject).FirstOrDefault(o=>o.EmployeeId==salaryFor.EmployeeId);
                     Client client = _db.ClientTable.Include(x => x.AccountDetailsObject).FirstOrDefault(o => o.Id == clientId);
-                    if (client.AccountDetailsObject.AccountBalance > employee.Salary)
+                    if ((client.AccountDetailsObject.AccountBalance * client.ForSalary*0.01) > salaryDisbursement.Amount)
                     {
                         Transactions transaction = new Transactions
                         {

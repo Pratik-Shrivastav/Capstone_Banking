@@ -56,7 +56,14 @@ namespace Capstone_Banking.Service
 
         public async Task<bool> UpdatePaymentStatus(int clientId,int beneficiaryId, int payementId, string status)
         {
-           return _superAdminRepository.UpdatePaymentStatus(clientId, beneficiaryId,payementId, status);
+            try
+            {
+                return _superAdminRepository.UpdatePaymentStatus(clientId, beneficiaryId, payementId, status);
+            }
+            catch (Exception ex) 
+            {
+                return false;
+            }
         }
 
         public async Task<Object> GetSalaryDisbursementClient(int clientId, int page, int pageSize)
