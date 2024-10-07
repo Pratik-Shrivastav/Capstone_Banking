@@ -480,7 +480,7 @@ namespace Capstone_Banking.Controller
             {
                 string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 EmployeesCsv.AddBulkEmpoloyees(int.Parse(userId), CsvFile);
-                return Ok("Employees added successfully."); ;
+                return StatusCode(200); ;
             }
             catch (Exception ex) 
             {

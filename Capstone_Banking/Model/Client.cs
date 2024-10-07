@@ -52,5 +52,8 @@ public class Client
     public ICollection<Beneficiary>? BeneficiaryList { get; set; } = new List<Beneficiary>();
     public ICollection<SalaryDisbursement>? SalaryDisbursementList { get; set; }
 
+    public int? ForSalary {  get; set; }
+    public int? ForPayment { get; set; }
+
 }
 

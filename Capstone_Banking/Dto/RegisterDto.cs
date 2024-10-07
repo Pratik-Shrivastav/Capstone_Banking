@@ -17,5 +17,7 @@
         public string AccountNumber { get; set; }
         public string IFSC { get; set; }
         public string Branch { get; set; }
+        public int? ForSalary { get; set; }
+        public int? ForPayment { get; set; }
     }
 }
